@@ -1,6 +1,4 @@
-# Uncover
-cmd/uncover/uncover
-integration-tests/integration-test
+
 
 # Binaries for programs and plugins
 *.exe
@@ -18,3 +16,4 @@ integration-tests/integration-test
 # Dependency directories (remove the comment below to include it)
 # vendor/
 dist/
+.idea/

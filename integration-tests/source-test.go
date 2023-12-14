@@ -6,13 +6,24 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/projectdiscovery/uncover/testutils"
 	folderutil "github.com/projectdiscovery/utils/folder"
+	"github.com/wjlin0/uncover/testutils"
 )
 
 var (
 	ConfigFile = filepath.Join(folderutil.AppConfigDirOrDefault(".uncover-config", "uncover"), "provider-config.yaml")
 )
+
+type fofaSpiderTestcases struct{}
+
+func (f fofaSpiderTestcases) Execute() error {
+	//TODO implement me
+	results, err := testutils.RunUncoverAndGetResults(debug, "-fofa-spider", "domain=\"baidu.com\"")
+	if err != nil {
+		return err
+	}
+	return expectResultsGreaterThanCount(results, 0)
+}
 
 type censysTestcases struct{}
 

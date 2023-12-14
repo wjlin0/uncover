@@ -2,24 +2,34 @@ package uncover
 
 import (
 	"context"
+	anubis_spider "github.com/wjlin0/uncover/sources/agent/anubis-spider"
+	"github.com/wjlin0/uncover/sources/agent/binary"
+	bing_spider "github.com/wjlin0/uncover/sources/agent/bing-spider"
+	chinaz_spider "github.com/wjlin0/uncover/sources/agent/chinaz-spider"
+	fofa_spider "github.com/wjlin0/uncover/sources/agent/fofa-spider"
+	google_spider "github.com/wjlin0/uncover/sources/agent/google-spider"
+	ip138_spider "github.com/wjlin0/uncover/sources/agent/ip138-spider"
+	qianxun_spider "github.com/wjlin0/uncover/sources/agent/qianxun-spider"
+	rapiddns_spider "github.com/wjlin0/uncover/sources/agent/rapiddns-spider"
+	"github.com/wjlin0/uncover/sources/agent/sitedossier-spider"
 	"sync"
 	"time"
 
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/uncover/sources"
-	"github.com/projectdiscovery/uncover/sources/agent/censys"
-	"github.com/projectdiscovery/uncover/sources/agent/criminalip"
-	"github.com/projectdiscovery/uncover/sources/agent/fofa"
-	"github.com/projectdiscovery/uncover/sources/agent/hunter"
-	"github.com/projectdiscovery/uncover/sources/agent/hunterhow"
-	"github.com/projectdiscovery/uncover/sources/agent/netlas"
-	"github.com/projectdiscovery/uncover/sources/agent/publicwww"
-	"github.com/projectdiscovery/uncover/sources/agent/quake"
-	"github.com/projectdiscovery/uncover/sources/agent/shodan"
-	"github.com/projectdiscovery/uncover/sources/agent/shodanidb"
-	"github.com/projectdiscovery/uncover/sources/agent/zoomeye"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	stringsutil "github.com/projectdiscovery/utils/strings"
+	"github.com/wjlin0/uncover/sources"
+	"github.com/wjlin0/uncover/sources/agent/censys"
+	"github.com/wjlin0/uncover/sources/agent/criminalip"
+	"github.com/wjlin0/uncover/sources/agent/fofa"
+	"github.com/wjlin0/uncover/sources/agent/hunter"
+	"github.com/wjlin0/uncover/sources/agent/hunterhow"
+	"github.com/wjlin0/uncover/sources/agent/netlas"
+	"github.com/wjlin0/uncover/sources/agent/publicwww"
+	"github.com/wjlin0/uncover/sources/agent/quake"
+	"github.com/wjlin0/uncover/sources/agent/shodan"
+	"github.com/wjlin0/uncover/sources/agent/shodanidb"
+	"github.com/wjlin0/uncover/sources/agent/zoomeye"
 )
 
 var DefaultChannelBuffSize = 32
@@ -32,8 +42,11 @@ type Options struct {
 	Timeout  int
 	// Note these ratelimits are used as fallback in case agent
 	// ratelimit is not available in DefaultRateLimits
-	RateLimit     uint          // default 30 req
-	RateLimitUnit time.Duration // default unit
+	RateLimit              uint          // default 30 req
+	RateLimitUnit          time.Duration // default unit
+	ProviderConfigLocation string
+	Proxy                  string
+	ProxyAuth              string
 }
 
 // Service handler of all uncover Agents
@@ -72,9 +85,29 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &publicwww.Agent{})
 		case "hunterhow":
 			s.Agents = append(s.Agents, &hunterhow.Agent{})
+		case "binary":
+			s.Agents = append(s.Agents, &binary.Agent{})
+		case "anubis-spider":
+			s.Agents = append(s.Agents, &anubis_spider.Agent{})
+		case "sitedossier-spider":
+			s.Agents = append(s.Agents, &sitedossier_spider.Agent{})
+		case "fofa-spider":
+			s.Agents = append(s.Agents, &fofa_spider.Agent{})
+		case "bing-spider":
+			s.Agents = append(s.Agents, &bing_spider.Agent{})
+		case "chinaz-spider":
+			s.Agents = append(s.Agents, &chinaz_spider.Agent{})
+		case "google-spider":
+			s.Agents = append(s.Agents, &google_spider.Agent{})
+		case "ip138-spider":
+			s.Agents = append(s.Agents, &ip138_spider.Agent{})
+		case "qianxun-spider":
+			s.Agents = append(s.Agents, &qianxun_spider.Agent{})
+		case "rapiddns-spider":
+			s.Agents = append(s.Agents, &rapiddns_spider.Agent{})
 		}
 	}
-	s.Provider = sources.NewProvider()
+	s.Provider = sources.NewProvider(opts.ProviderConfigLocation)
 	s.Keys = s.Provider.GetKeys()
 
 	if opts.RateLimit == 0 {
@@ -85,7 +118,7 @@ func New(opts *Options) (*Service, error) {
 	}
 
 	var err error
-	s.Session, err = sources.NewSession(&s.Keys, opts.MaxRetry, opts.Timeout, 10, opts.Agents, opts.RateLimitUnit)
+	s.Session, err = sources.NewSession(&s.Keys, opts.MaxRetry, opts.Timeout, 10, opts.Agents, opts.RateLimitUnit, opts.Proxy, opts.ProxyAuth)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +144,7 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 	agentLabel:
 		for _, agent := range s.Agents {
 			keys := s.Provider.GetKeys()
-			if keys.Empty() && agent.Name() != "shodan-idb" {
+			if keys.Empty() && !(stringsutil.EqualFoldAny(agent.Name(), AnonymousAgents()...)) {
 				gologger.Error().Msgf(agent.Name(), "agent given but keys not found")
 				continue agentLabel
 			}
@@ -151,7 +184,7 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 	return megaChan, nil
 }
 
-// ExecuteWithWriters writes output to writer along with stdout
+// ExecuteWithCallback ExecuteWithWriters writes output to writer along with stdout
 func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result sources.Result)) error {
 	ch, err := s.Execute(ctx)
 	if err != nil {
@@ -176,10 +209,20 @@ func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result 
 // AllAgents returns all supported uncover Agents
 func (s *Service) AllAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "shodan-idb", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider",
 	}
 }
-
+func UncoverAgents() []string {
+	return []string{
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+	}
+}
+func AnonymousAgents() []string {
+	return []string{
+		"shodan-idb", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "anubis-spider",
+	}
+}
 func (s *Service) nilCheck() error {
 	if s.Provider == nil {
 		return errorutil.NewWithTag("uncover", "provider cannot be nil")
@@ -194,5 +237,18 @@ func (s *Service) nilCheck() error {
 }
 
 func (s *Service) hasAnyAnonymousProvider() bool {
-	return stringsutil.EqualFoldAny("shodan-idb", s.Options.Agents...)
+	return func() bool {
+		for _, str := range AnonymousAgents() {
+			if stringsutil.EqualFoldAny(str, s.Options.Agents...) {
+				return true
+			}
+		}
+		return false
+	}()
+}
+func AllAgents() []string {
+	return []string{
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider",
+	}
 }

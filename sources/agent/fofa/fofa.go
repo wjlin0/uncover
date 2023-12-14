@@ -4,12 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/projectdiscovery/gologger"
 	"net/http"
 	"strconv"
+	"time"
 
 	"errors"
 
-	"github.com/projectdiscovery/uncover/sources"
+	"github.com/wjlin0/uncover/sources"
 )
 
 const (
@@ -28,13 +30,17 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 	if session.Keys.FofaEmail == "" || session.Keys.FofaKey == "" {
 		return nil, errors.New("empty fofa keys")
 	}
-
+	start := time.Now()
 	results := make(chan sources.Result)
 
 	go func() {
 		defer close(results)
 
 		var numberOfResults int
+
+		defer func() {
+			gologger.Info().Msgf("%s took %s seconds to enumerate %v results.", agent.Name(), time.Since(start).Round(time.Second).String(), numberOfResults)
+		}()
 		page := 1
 		for {
 			fofaRequest := &FofaRequest{
@@ -42,6 +48,9 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 				Fields: Fields,
 				Size:   Size,
 				Page:   page,
+			}
+			if query.Limit > Size*5 {
+				fofaRequest.Size = 500
 			}
 			fofaResponse := agent.query(URL, session, fofaRequest, results)
 			if fofaResponse == nil {

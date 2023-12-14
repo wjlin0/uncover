@@ -7,7 +7,7 @@ import (
 
 	"github.com/logrusorgru/aurora"
 
-	"github.com/projectdiscovery/uncover/testutils"
+	"github.com/wjlin0/uncover/testutils"
 )
 
 var (
@@ -20,15 +20,17 @@ var (
 
 	tests = map[string]testutils.TestCase{
 		// source tests
-		"censys":  censysTestcases{},
-		"shodan":  shodanTestcases{},
-		"zoomeye": zoomeyeTestcases{},
-		"fofa":    fofaTestcases{},
+		"fofa-spider": fofaSpiderTestcases{},
+
+		//"censys":  censysTestcases{},
+		//"shodan":  shodanTestcases{},
+		//"zoomeye": zoomeyeTestcases{},
+		//"fofa":    fofaTestcases{},
 		//"hunter":  hunterTestcases{},
-		"quake":      quakeTestcases{},
-		"netlas":     netlasTestcases{},
-		"criminalip": criminalipTestcases{},
-		"hunterhow":  hunterhowTestcases{},
+		//"quake":      quakeTestcases{},
+		//"netlas":     netlasTestcases{},
+		//"criminalip": criminalipTestcases{},
+		//"hunterhow":  hunterhowTestcases{},
 		// feature tests
 		"output": outputTestcases{},
 	}

@@ -2,7 +2,9 @@
 
 echo "::task~> Clean up & Build binaries files"
 rm integration-test uncover 2>/dev/null
-cd ../cmd/uncover
+cd ../
+go mod tidy
+cd ./cmd/uncover
 go build
 mv uncover ../../integration-tests/uncover
 cd ../../integration-tests

@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/uncover"
-	"github.com/projectdiscovery/uncover/sources"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	stringsutil "github.com/projectdiscovery/utils/strings"
+	"github.com/wjlin0/uncover"
+	"github.com/wjlin0/uncover/sources"
 )
 
 // Runner is an instance of the uncover enumeration
@@ -29,9 +29,12 @@ func NewRunner(options *Options) (*Runner, error) {
 	appendAllQueries(options)
 
 	opts := uncover.Options{
-		Agents:  options.Engine,
-		Queries: options.Query,
-		Limit:   options.Limit,
+		Agents:                 options.Engine,
+		Queries:                options.Query,
+		Limit:                  options.Limit,
+		Proxy:                  options.Proxy,
+		ProxyAuth:              options.ProxyAuth,
+		ProviderConfigLocation: options.Location,
 	}
 	service, err := uncover.New(&opts)
 	if err != nil {
@@ -57,7 +60,7 @@ func NewRunner(options *Options) (*Runner, error) {
 	return runner, nil
 }
 
-// RunEnumeration runs the subdomain enumeration flow on the targets specified
+// Run RunEnumeration runs the subdomain enumeration flow on the targets specified
 func (r *Runner) Run(ctx context.Context) error {
 	resultCallback := func(result sources.Result) {
 		optionFields := r.options.OutputFields

@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	UncoverConfigDir = folderutil.AppConfigDirOrDefault(".uncover-config", "uncover")
-	// DefaultProviderConfigLocation where keys and config of providers are stored
+	// UncoverConfigDir Todo: replace from utils with ConfigDirOrDefault
+	UncoverConfigDir = filepath.Join(folderutil.HomeDirOrDefault("."), ".config/uncover")
+	// DefaultProviderConfigLocation where keys and config of providers is stored
 	DefaultProviderConfigLocation = filepath.Join(UncoverConfigDir, "provider-config.yaml")
 )
 
@@ -31,10 +32,15 @@ type Provider struct {
 	CriminalIP []string `yaml:"criminalip"`
 	Publicwww  []string `yaml:"publicwww"`
 	HunterHow  []string `yaml:"hunterhow"`
+	Binary     []string `yaml:"binary"`
 }
 
 // NewProvider loads provider keys from default location and env variables
-func NewProvider() *Provider {
+func NewProvider(location string) *Provider {
+
+	if location != "" {
+		DefaultProviderConfigLocation = location
+	}
 	p := &Provider{}
 	if err := p.LoadProviderConfig(DefaultProviderConfigLocation); err != nil {
 		gologger.Error().Msgf("failed to load provider keys got %v", err)
@@ -94,11 +100,14 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.HunterHow) > 0 {
 		keys.HunterHowToken = provider.HunterHow[rand.Intn(len(provider.HunterHow))]
 	}
+	if len(provider.Binary) > 0 {
+		keys.BinaryToken = provider.Binary[rand.Intn(len(provider.Binary))]
+	}
 
 	return keys
 }
 
-// LoadProvidersFrom loads provider config from given location
+// LoadProviderConfig LoadProvidersFrom loads provider config from given location
 func (provider *Provider) LoadProviderConfig(location string) error {
 	if !fileutil.FileExists(location) {
 		return errorutil.NewWithTag("uncover", "provider config file %v does not exist", location)
@@ -122,7 +131,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	provider.CriminalIP = appendIfExists(provider.CriminalIP, "CRIMINALIP_API_KEY")
 	provider.Publicwww = appendIfExists(provider.Publicwww, "PUBLICWWW_API_KEY")
 	provider.HunterHow = appendIfExists(provider.HunterHow, "HUNTERHOW_API_KEY")
-
+	provider.Binary = appendIfExists(provider.Binary, "BINARY_API_KEY")
 	appendIfAllExists := func(arr []string, env1 string, env2 string) []string {
 		if val1, ok := os.LookupEnv(env1); ok {
 			if val2, ok2 := os.LookupEnv(env2); ok2 {
@@ -149,6 +158,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.Netlas) > 0,
 		len(provider.CriminalIP) > 0,
 		len(provider.HunterHow) > 0,
+		len(provider.Binary) > 0,
 	)
 }
 

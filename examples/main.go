@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/uncover"
-	"github.com/projectdiscovery/uncover/sources"
+	"github.com/wjlin0/uncover"
+	"github.com/wjlin0/uncover/sources"
 )
 
 func main() {

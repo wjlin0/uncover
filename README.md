@@ -3,24 +3,22 @@
 <br>
 </h1>
 
-
 <h4 align="center">Quickly discover exposed hosts on the internet using multiple search engines.</h4>
 
+
 <p align="center">
-<img src="https://img.shields.io/github/go-mod/go-version/projectdiscovery/uncover">
-<a href="https://github.com/projectdiscovery/uncover/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
-<a href="https://github.com/projectdiscovery/uncover/releases"><img src="https://img.shields.io/github/release/projectdiscovery/uncover"></a>
-<a href="https://twitter.com/pdiscoveryio"><img src="https://img.shields.io/twitter/follow/pdiscoveryio.svg?logo=twitter"></a>
-<a href="https://discord.gg/projectdiscovery"><img src="https://img.shields.io/discord/695645237418131507.svg?logo=discord"></a>
+<img src="https://img.shields.io/github/go-mod/go-version/wjlin0/uncover">
+<a href="https://github.com/wjlin0/uncover/issues"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
+<a href="https://github.com/wjlin0/uncover/releases"><img src="https://img.shields.io/github/release/wjlin0/uncover"></a>
 </p>
+
 
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#installation-instructions">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#provider-configuration">Configuration</a> •
-  <a href="#running-uncover">Running Uncover</a> •
-  <a href="https://discord.gg/projectdiscovery">Join Discord</a>
+  <a href="#running-uncover">Running Uncover</a> 
 </p>
 
 
@@ -29,34 +27,34 @@
 **uncover** is a go wrapper using APIs of well known search engines to quickly discover exposed hosts on the internet. It is built with automation in mind, so you can query it and utilize the results with your current pipeline tools.
 
 # Features
-
-<h1 align="center">
-  <img src="https://user-images.githubusercontent.com/8293321/156347215-a9ed00c2-4161-4773-9372-29fc32200f6a.png" alt="httpx" width="700px"></a>
-  <br>
-</h1>
-
-- Query multiple search engine at once
-- Available Search engine support
-  - **[Shodan](https://www.shodan.io)**
-  - **[Censys](https://search.censys.io)**
-  - **[FOFA](https://fofa.info)**
-  - **[Hunter](https://hunter.qianxin.com)**
-  - **[Quake](https://quake.360.net/quake/#/index)**
-  - **[Zoomeye](https://www.zoomeye.org)**
-  - **[Netlas](https://netlas.io/)**
-  - **[CriminalIP](https://www.criminalip.io)**
-  - **[PublicWWW](https://publicwww.com)**
-  - **[HunterHow](https://hunter.how)**
-- Multiple API key input support
-- Automatic API key randomization
-- **stdin** / **stdout** support for input
-
+- fork [uncover](https://github.com/projectdiscovery/uncover) and add some features
+- New crawler engine added
+    - **[Shodan](https://www.shodan.io)**
+    - **[Censys](https://search.censys.io)**
+    - **[FOFA](https://fofa.info)**
+    - **[Hunter](https://hunter.qianxin.com)**
+    - **[Quake](https://quake.360.net/quake/#/index)**
+    - **[Zoomeye](https://www.zoomeye.org)**
+    - **[Netlas](https://netlas.io/)**
+    - **[CriminalIP](https://www.criminalip.io)**
+    - **[PublicWWW](https://publicwww.com)**
+    - **[HunterHow](https://hunter.how)**
+    - **[binary](https://www.binaryedge.io/)**
+    - **[Bing-Spider](https://www.bing.com/)**
+    - **[Google-Spider](https://www.baidu.com/)**
+    - **[Sitedossier-Spider](http://www.sitedossier.com/)**
+    - **[Fofa-Spider](https://fofa.info)**
+    - **[Chinaz-Spider](https://www.chinaz.com/)**
+    - **[Ip138-Spider](https://site.ip138.com/)**
+    - **[qianxun-Spider](https://www.dnsscan.cn/)**
+    - **[Rapiddns-Spider](https://rapiddns.io/subdomain/)**
+    - **[anubis-Spider](https://jldc.me/anubis/subdomains/)**
 ## Installation Instructions
 
 uncover requires **go1.20** to install successfully. Run the following command to get the repo -
 
 ```sh
-go install -v github.com/projectdiscovery/uncover/cmd/uncover@latest
+go install -v github.com/wjlin0/uncover/cmd/uncover@latest
 ```
 
 ## Usage
@@ -71,31 +69,47 @@ This will display help for the tool. Here are all the flags it supports:
 Usage:
   ./uncover [flags]
 
-Flags:
-INPUT:
+Flags:                                                                                                                
+INPUT:                                                                                                                
    -q, -query string[]   search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')
-   -e, -engine string[]  search engine to query (shodan,shodan-idb,fofa,censys,quake,hunter,zoomeye,netlas,criminalip,publicwww,hunterhow) (default shodan)
+   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spide
+r ip138-spider qianxun-spider rapiddns-spider] (default fofa)
 
 SEARCH-ENGINE:
-   -s, -shodan string[]       search query for shodan (example: -shodan 'query.txt')
-   -sd, -shodan-idb string[]  search query for shodan-idb (example: -shodan-idb 'query.txt')
-   -ff, -fofa string[]        search query for fofa (example: -fofa 'query.txt')
-   -cs, -censys string[]      search query for censys (example: -censys 'query.txt')
-   -qk, -quake string[]       search query for quake (example: -quake 'query.txt')
-   -ht, -hunter string[]      search query for hunter (example: -hunter 'query.txt')
-   -ze, -zoomeye string[]     search query for zoomeye (example: -zoomeye 'query.txt')
-   -ne, -netlas string[]      search query for netlas (example: -netlas 'query.txt')
-   -cl, -criminalip string[]  search query for criminalip (example: -criminalip 'query.txt')
-   -pw, -publicwww string[]   search query for publicwww (example: -publicwww 'query.txt')
-   -hh, -hunterhow string[]   search query for hunterhow (example: -hunterhow 'query.txt')
+   -s, -shodan string[]                search query for shodan (example: -shodan 'query.txt')
+   -sd, -shodan-idb string[]           search query for shodan-idb (example: -shodan-idb 'query.txt')
+   -ff, -fofa string[]                 search query for fofa (example: -fofa 'query.txt')
+   -cs, -censys string[]               search query for censys (example: -censys 'query.txt')
+   -qk, -quake string[]                search query for quake (example: -quake 'query.txt')
+   -ht, -hunter string[]               search query for hunter (example: -hunter 'query.txt')
+   -ze, -zoomeye string[]              search query for zoomeye (example: -zoomeye 'query.txt')
+   -ne, -netlas string[]               search query for netlas (example: -netlas 'query.txt')
+   -cl, -criminalip string[]           search query for criminalip (example: -criminalip 'query.txt')
+   -pw, -publicwww string[]            search query for publicwww (example: -publicwww 'query.txt')
+   -hh, -hunterhow string[]            search query for hunterhow (example: -hunterhow 'query.txt')
+   -fs, -fofa-spider string[]          search query for fofa-spider (example: -fofa-spider 'query.txt')
+   -gs, -google-spider string[]        search query for google-spider (example: -google-spider 'query.txt')
+   -bs, -bing-spider string[]          search query for bing-spider (example: -bing-spider 'query.txt')
+   -czs, -chinaz-spider string[]       search query for chinaz-spider (example: -chinaz-spider 'query.txt')
+   -is, -ip138-spider string[]         search query for ip138-spider (example: -ip138-spider 'query.txt')
+   -rs, -rapiddns-spider string[]      search query for rapiddns-spider (example: -rapiddns-spider 'query.txt')
+   -qs, -qianxun-spider string[]       search query for qianxun-spider (example: -qianxun-spider 'query.txt')
+   -sds, -sitedossier-spider string[]  search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')
+   -as, -anubis-spider string[]        search query for anubis-spider (example: -anubis-spider 'query.txt')
 
 CONFIG:
-   -pc, -provider string         provider configuration file (default "$CONFIG/uncover/provider-config.yaml")
-   -config string                flag configuration file (default "$CONFIG/uncover/config.yaml")
+   -pc, -provider string         provider configuration file (default "C:\\Users\\wjl\\.config\\uncover\\provider-config.yaml")
+   -config string                flag configuration file (default "C:\\Users\\wjl\\AppData\\Roaming\\uncover\\config.yaml")
    -timeout int                  timeout in seconds (default 30)
    -rl, -rate-limit int          maximum number of http requests to send per second
    -rlm, -rate-limit-minute int  maximum number of requests to send per minute
    -retry int                    number of times to retry a failed request (default 2)
+   -proxy string                 proxy to use for requests (example: http://localhost:1080
+   -proxy-auth string            proxy authentication in the format username:password
+
+UPDATE:
+   -up, -update                 update uncover to latest version
+   -duc, -disable-update-check  disable automatic uncover update check
 
 OUTPUT:
    -o, -output string  output file to write found results
@@ -174,7 +188,7 @@ export PUBLICWWW_API_KEY=xxx
 export HUNTERHOW_API_KEY=xxx
 ```
 
-Required API keys can be obtained by signing up on following platform [Shodan](https://account.shodan.io/register), [Censys](https://censys.io/register), [Fofa](https://fofa.info/toLogin), [Quake](https://quake.360.net/quake/#/index), [Hunter](https://user.skyeye.qianxin.com/user/register?next=https%3A//hunter.qianxin.com/api/uLogin&fromLogin=1), [ZoomEye](https://www.zoomeye.org/login), [Netlas](https://app.netlas.io/registration/), [CriminalIP](https://www.criminalip.io/register) and [Publicwww](https://publicwww.com/profile/signup.html).
+Required API keys can be obtained by signing up on following platform [Shodan](https://account.shodan.io/register), [Censys](https://censys.io/register), [Fofa](https://fofa.info/toLogin), [Quake](https://quake.360.net/quake/#/index), [Hunter](https://user.skyeye.qianxin.com/user/register?next=https%3A//hunter.qianxin.com/api/uLogin&fromLogin=1), [ZoomEye](https://www.zoomeye.org/login), [Netlas](https://app.netlas.io/registration/), [CriminalIP](https://www.criminalip.io/register), [Publicwww](https://publicwww.com/profile/signup.html) and [binary](https://app.binaryedge.io/login)
 
 ## Running Uncover
 
@@ -191,7 +205,7 @@ echo 'ssl:"Uber Technologies, Inc."' | uncover
 \__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9    
                                         
 
-		projectdiscovery.io
+		wjlin0.com
 
 [WRN] Use with caution. You are responsible for your actions
 [WRN] Developers assume no liability and are not responsible for any misuse or damage.
@@ -228,7 +242,7 @@ uncover -q dorks.txt
 \__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9    
                                         
 
-    projectdiscovery.io
+    wjlin0.com
 
 [WRN] Use with caution. You are responsible for your actions
 [WRN] Developers assume no liability and are not responsible for any misuse or damage.
@@ -261,7 +275,7 @@ echo jira | uncover -e shodan,censys,fofa,quake,hunter,zoomeye,netlas,criminalip
 \__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9  
                                         
 
-    projectdiscovery.io
+    wjlin0.com
 
 [WRN] Use with caution. You are responsible for your actions
 [WRN] Developers assume no liability and are not responsible for any misuse or damage.
@@ -293,7 +307,7 @@ uncover -shodan 'http.component:"Atlassian Jira"' -censys 'services.software.pro
 \__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9
                                         
 
-    projectdiscovery.io
+    wjlin0.com
 
 [WRN] Use with caution. You are responsible for your actions
 [WRN] Developers assume no liability and are not responsible for any misuse or damage.
@@ -333,7 +347,7 @@ echo 51.83.59.99/24 | uncover
 \__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9  
                                         
 
-    projectdiscovery.io
+    wjlin0.com
 
 [WRN] Use with caution. You are responsible for your actions
 [WRN] Developers assume no liability and are not responsible for any misuse or damage.
@@ -422,6 +436,6 @@ https://129.206.117.248
 
 <div align="center">
 
-**uncover** is made with 🖤 by the [projectdiscovery](https://projectdiscovery.io) team.
+**uncover** is made with 🖤 by the [wjlin0](https://wjlin0.com) fork [projectdiscovery](https://projectdiscovery.io) .
 
 </div>

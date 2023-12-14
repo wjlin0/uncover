@@ -1,4 +1,5 @@
 package sources
+
 import (
 	"encoding/json"
 	"fmt"
@@ -6,14 +7,14 @@ import (
 )
 
 type Result struct {
-	Timestamp int64  `json:"timestamp"`
-	Source    string `json:"source"`
-	IP        string `json:"ip"`
-	Port      int    `json:"port"`
-	Host      string `json:"host"`
-	Url       string `json:"url"`
-	Raw       []byte `json:"-"`
-	Error     error  `json:"-"`
+	Timestamp int64  `json:"timestamp" csv:"timestamp"`
+	Source    string `json:"source" csv:"source"`
+	IP        string `json:"ip" csv:"IP"`
+	Port      int    `json:"port" csv:"port"`
+	Host      string `json:"host" csv:"host"`
+	Url       string `json:"url" csv:"url"`
+	Raw       []byte `json:"-" csv:"-"`
+	Error     error  `json:"-" csv:"-"`
 }
 
 func (result *Result) IpPort() string {

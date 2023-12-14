@@ -1,6 +1,9 @@
 package runner
 
 import (
+	"fmt"
+	"github.com/wjlin0/uncover"
+	"github.com/wjlin0/uncover/utils/update"
 	"os"
 	"path/filepath"
 
@@ -10,12 +13,11 @@ import (
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/gologger/formatter"
 	"github.com/projectdiscovery/gologger/levels"
-	"github.com/projectdiscovery/uncover/sources"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	fileutil "github.com/projectdiscovery/utils/file"
 	folderutil "github.com/projectdiscovery/utils/folder"
 	genericutil "github.com/projectdiscovery/utils/generic"
-	updateutils "github.com/projectdiscovery/utils/update"
+	"github.com/wjlin0/uncover/sources"
 )
 
 var (
@@ -52,7 +54,19 @@ type Options struct {
 	CriminalIP         goflags.StringSlice
 	Publicwww          goflags.StringSlice
 	HunterHow          goflags.StringSlice
+	FoFaSpider         goflags.StringSlice
+	GoogleSpider       goflags.StringSlice
+	BingSpider         goflags.StringSlice
+	ChinazSpider       goflags.StringSlice
+	Ip138Spider        goflags.StringSlice
+	RapidDNSSpider     goflags.StringSlice
+	QianXunSpider      goflags.StringSlice
+	SiteDossierSpider  goflags.StringSlice
+	AnubisSpider       goflags.StringSlice
 	DisableUpdateCheck bool
+	Proxy              string
+	ProxyAuth          string
+	Location           string
 }
 
 // ParseOptions parses the command line flags provided by a user
@@ -63,7 +77,7 @@ func ParseOptions() *Options {
 
 	flagSet.CreateGroup("input", "Input",
 		flagSet.StringSliceVarP(&options.Query, "query", "q", nil, "search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')", goflags.FileStringSliceOptions),
-		flagSet.StringSliceVarP(&options.Engine, "engine", "e", nil, "search engine to query (shodan,shodan-idb,fofa,censys,quake,hunter,zoomeye,netlas,publicwww,criminalip,hunterhow) (default shodan)", goflags.FileNormalizedStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Engine, "engine", "e", nil, fmt.Sprintf("search engine to query %v (default fofa)", uncover.AllAgents()), goflags.FileNormalizedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("search-engine", "Search-Engine",
@@ -78,6 +92,15 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.CriminalIP, "criminalip", "cl", nil, "search query for criminalip (example: -criminalip 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.FoFaSpider, "fofa-spider", "fs", nil, "search query for fofa-spider (example: -fofa-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.GoogleSpider, "google-spider", "gs", nil, "search query for google-spider (example: -google-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.BingSpider, "bing-spider", "bs", nil, "search query for bing-spider (example: -bing-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.ChinazSpider, "chinaz-spider", "czs", nil, "search query for chinaz-spider (example: -chinaz-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Ip138Spider, "ip138-spider", "is", nil, "search query for ip138-spider (example: -ip138-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.RapidDNSSpider, "rapiddns-spider", "rs", nil, "search query for rapiddns-spider (example: -rapiddns-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.QianXunSpider, "qianxun-spider", "qs", nil, "search query for qianxun-spider (example: -qianxun-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.SiteDossierSpider, "sitedossier-spider", "sds", nil, "search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.AnubisSpider, "anubis-spider", "as", nil, "search query for anubis-spider (example: -anubis-spider 'query.txt')", goflags.FileStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
@@ -87,6 +110,8 @@ func ParseOptions() *Options {
 		flagSet.IntVarP(&options.RateLimit, "rate-limit", "rl", 0, "maximum number of http requests to send per second"),
 		flagSet.IntVarP(&options.RateLimitMinute, "rate-limit-minute", "rlm", 0, "maximum number of requests to send per minute"),
 		flagSet.IntVar(&options.Retries, "retry", 2, "number of times to retry a failed request"),
+		flagSet.StringVar(&options.Proxy, "proxy", "", "proxy to use for requests (example: http://localhost:1080"),
+		flagSet.StringVar(&options.ProxyAuth, "proxy-auth", "", "proxy authentication in the format username:password"),
 	)
 
 	flagSet.CreateGroup("update", "Update",
@@ -117,13 +142,13 @@ func ParseOptions() *Options {
 	showBanner()
 
 	if !options.DisableUpdateCheck {
-		latestVersion, err := updateutils.GetToolVersionCallback("uncover", version)()
+		latestVersion, err := update.CheckVersion("wjlin0", "uncover", version)
 		if err != nil {
 			if options.Verbose {
 				gologger.Error().Msgf("uncover version check failed: %v", err.Error())
 			}
 		} else {
-			gologger.Info().Msgf("Current uncover version %v %v", version, updateutils.GetVersionDescription(version, latestVersion))
+			gologger.Info().Msgf("Current uncover version %v %v", version, update.GetVersionDescription(version, latestVersion))
 		}
 	}
 
@@ -147,8 +172,18 @@ func ParseOptions() *Options {
 		len(options.Netlas),
 		len(options.CriminalIP),
 		len(options.Publicwww),
-		len(options.HunterHow)) {
-		options.Engine = append(options.Engine, "shodan")
+		len(options.HunterHow),
+		len(options.FoFaSpider),
+		len(options.GoogleSpider),
+		len(options.BingSpider),
+		len(options.ChinazSpider),
+		len(options.Ip138Spider),
+		len(options.RapidDNSSpider),
+		len(options.QianXunSpider),
+		len(options.SiteDossierSpider),
+		len(options.AnubisSpider),
+	) {
+		options.Engine = append(options.Engine, "fofa")
 	}
 
 	// we make the assumption that input queries aren't that much
@@ -208,7 +243,17 @@ func (options *Options) validateOptions() error {
 		len(options.Netlas),
 		len(options.CriminalIP),
 		len(options.Publicwww),
-		len(options.HunterHow)) {
+		len(options.HunterHow),
+		len(options.FoFaSpider),
+		len(options.GoogleSpider),
+		len(options.BingSpider),
+		len(options.ChinazSpider),
+		len(options.Ip138Spider),
+		len(options.RapidDNSSpider),
+		len(options.QianXunSpider),
+		len(options.SiteDossierSpider),
+		len(options.AnubisSpider),
+	) {
 		return errors.New("no query provided")
 	}
 
@@ -230,7 +275,17 @@ func (options *Options) validateOptions() error {
 		len(options.Netlas),
 		len(options.CriminalIP),
 		len(options.Publicwww),
-		len(options.HunterHow)) {
+		len(options.HunterHow),
+		len(options.FoFaSpider),
+		len(options.GoogleSpider),
+		len(options.BingSpider),
+		len(options.ChinazSpider),
+		len(options.Ip138Spider),
+		len(options.RapidDNSSpider),
+		len(options.QianXunSpider),
+		len(options.SiteDossierSpider),
+		len(options.AnubisSpider),
+	) {
 		return errors.New("no engine specified")
 	}
 
@@ -262,4 +317,13 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "criminalip", options.CriminalIP...)
 	appendQuery(options, "publicwww", options.Publicwww...)
 	appendQuery(options, "hunterhow", options.HunterHow...)
+	appendQuery(options, "fofa-spider", options.FoFaSpider...)
+	appendQuery(options, "google-spider", options.GoogleSpider...)
+	appendQuery(options, "bing-spider", options.BingSpider...)
+	appendQuery(options, "chinaz-spider", options.ChinazSpider...)
+	appendQuery(options, "ip138-spider", options.Ip138Spider...)
+	appendQuery(options, "rapiddns-spider", options.RapidDNSSpider...)
+	appendQuery(options, "qianxun-spider", options.QianXunSpider...)
+	appendQuery(options, "sitedossier-spider", options.SiteDossierSpider...)
+	appendQuery(options, "anubis-spider", options.AnubisSpider...)
 }

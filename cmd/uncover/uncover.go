@@ -6,7 +6,7 @@ import (
 	// Attempts to increase the OS file descriptors - Fail silently
 	_ "github.com/projectdiscovery/fdmax/autofdmax"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/uncover/runner"
+	"github.com/wjlin0/uncover/runner"
 )
 
 func main() {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/projectdiscovery/gologger"
+	"github.com/wjlin0/pathScan/pkg/util"
 	"net/http"
 	"strconv"
 	"time"
@@ -99,8 +100,13 @@ func (agent *Agent) query(URL string, session *sources.Session, fofaRequest *Fof
 	for _, fofaResult := range fofaResponse.Results {
 		result := sources.Result{Source: agent.Name()}
 		result.IP = fofaResult[0]
-		result.Port, _ = strconv.Atoi(fofaResult[1])
-		result.Host = fofaResult[2]
+
+		protocol, host, port := util.GetProtocolHostAndPort(fofaResult[2])
+		result.Host = host
+		if result.Port, _ = strconv.Atoi(fofaResult[1]); result.Port == 0 {
+			result.Port = port
+		}
+		result.Url = fmt.Sprintf("%s://%s:%d", protocol, host, result.Port)
 		raw, _ := json.Marshal(result)
 		result.Raw = raw
 		results <- result

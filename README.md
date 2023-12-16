@@ -39,16 +39,18 @@
     - **[CriminalIP](https://www.criminalip.io)**
     - **[PublicWWW](https://publicwww.com)**
     - **[HunterHow](https://hunter.how)**
-    - **[binary](https://www.binaryedge.io/)**
+    - **[Binary](https://www.binaryedge.io/)**
+    - **[Github](https://github.com/)**
     - **[Bing-Spider](https://www.bing.com/)**
     - **[Google-Spider](https://www.baidu.com/)**
     - **[Sitedossier-Spider](http://www.sitedossier.com/)**
     - **[Fofa-Spider](https://fofa.info)**
     - **[Chinaz-Spider](https://www.chinaz.com/)**
     - **[Ip138-Spider](https://site.ip138.com/)**
-    - **[qianxun-Spider](https://www.dnsscan.cn/)**
+    - **[Qianxun-Spider](https://www.dnsscan.cn/)**
     - **[Rapiddns-Spider](https://rapiddns.io/subdomain/)**
-    - **[anubis-Spider](https://jldc.me/anubis/subdomains/)**
+    - **[Anubis-Spider](https://jldc.me/anubis/subdomains/)**
+    - **[Baidu-Spider](https://www.baidu.com/)**
 ## Installation Instructions
 
 uncover requires **go1.20** to install successfully. Run the following command to get the repo -
@@ -69,11 +71,10 @@ This will display help for the tool. Here are all the flags it supports:
 Usage:
   ./uncover [flags]
 
-Flags:                                                                                                                
-INPUT:                                                                                                                
+Flags:
+INPUT:
    -q, -query string[]   search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')
-   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spide
-r ip138-spider qianxun-spider rapiddns-spider] (default fofa)
+   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider] (default fofa)
 
 SEARCH-ENGINE:
    -s, -shodan string[]                search query for shodan (example: -shodan 'query.txt')
@@ -87,6 +88,7 @@ SEARCH-ENGINE:
    -cl, -criminalip string[]           search query for criminalip (example: -criminalip 'query.txt')
    -pw, -publicwww string[]            search query for publicwww (example: -publicwww 'query.txt')
    -hh, -hunterhow string[]            search query for hunterhow (example: -hunterhow 'query.txt')
+   -gh, -github string[]               search query for github (example: -github 'query.txt')
    -fs, -fofa-spider string[]          search query for fofa-spider (example: -fofa-spider 'query.txt')
    -gs, -google-spider string[]        search query for google-spider (example: -google-spider 'query.txt')
    -bs, -bing-spider string[]          search query for bing-spider (example: -bing-spider 'query.txt')
@@ -96,6 +98,7 @@ SEARCH-ENGINE:
    -qs, -qianxun-spider string[]       search query for qianxun-spider (example: -qianxun-spider 'query.txt')
    -sds, -sitedossier-spider string[]  search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')
    -as, -anubis-spider string[]        search query for anubis-spider (example: -anubis-spider 'query.txt')
+   -bus, -baidu-spider string[]        search query for baidu-spider (example: -baidu-spider 'query.txt')
 
 CONFIG:
    -pc, -provider string         provider configuration file (default "C:\\Users\\wjl\\.config\\uncover\\provider-config.yaml")

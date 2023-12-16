@@ -1,133 +1,60 @@
 package bing_spider
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/projectdiscovery/gologger"
-	"github.com/wjlin0/pathScan/pkg/util"
 	"github.com/wjlin0/uncover/sources"
-	"io"
 	"net/http"
-	"strings"
 	"time"
 )
 
 const (
-	URL     = "https://www.bing.com/search?q=%s&first=%d&count=20"
+	URL     = "https://www.bing.com/search?q=%s&first=%d&count=%d"
 	URLInit = "https://www.bing.com/"
 	Source  = "bing-spider"
+	Limit   = 500
 )
 
 type Agent struct {
 	options *sources.Agent
 }
+
 type bingRequest struct {
 	Q     string `json:"q"`
 	First int    `json:"first"`
+	Count int    `json:"count"`
 }
 
 func (agent *Agent) Name() string {
 	return Source
 }
+
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 
 	results := make(chan sources.Result)
+
 	start := time.Now()
 	go func() {
 		defer close(results)
 		var (
-			err             error
-			cookies         []*http.Cookie
-			Results         map[string]struct{}
 			numberOfResults int
-			page            int
 		)
-		cookies, err = agent.queryCookies(session)
-		if err != nil {
-			results <- sources.Result{Source: agent.Name(), Error: errors.Wrap(err, "get bing-spider cookies error")}
-			return
-		}
-		Results = make(map[string]struct{})
-		page = 0
-		q := fmt.Sprintf("site:.%s", query.Query)
-
 		defer func() {
 			gologger.Info().Msgf("%s took %s seconds to enumerate %v results.", agent.Name(), time.Since(start).Round(time.Second).String(), numberOfResults)
 		}()
-
-		for {
-			for k, _ := range Results {
-				if k == query.Query {
-					continue
-				}
-				q = fmt.Sprintf("%s -site:%s", q, k)
-			}
-			bingReq := &bingRequest{
-				Q:     q,
-				First: page,
-			}
-			bingResponse := agent.query(session, query.Query, URL, cookies, bingReq, Results, results)
-			if len(bingResponse) == 0 || numberOfResults > query.Limit {
-				break
-			}
-			numberOfResults += len(bingResponse)
-
-			for i := 0; i < len(bingResponse); i++ {
-				Results[bingResponse[i]] = struct{}{}
-			}
+		cookies, err := agent.queryCookies(session)
+		if err != nil {
+			results <- sources.Result{Source: agent.Name(), Error: err}
+			return
 		}
-
+		numberOfResults = len(newQuery(session, cookies, agent, query, results).run())
 	}()
 
 	return results, nil
 }
-func (agent *Agent) query(session *sources.Session, domain string, URL string, cookies []*http.Cookie, bingRequest *bingRequest, Results map[string]struct{}, results chan sources.Result) []string {
-	var (
-		shouldIgnoreErrors bool
-	)
-	resp, err := agent.queryURL(session, URL, cookies, bingRequest)
-	if err != nil {
-		results <- sources.Result{Source: agent.Name(), Error: errors.Wrap(err, "request error")}
-		return nil
-	}
-	defer resp.Body.Close()
-	body := bytes.Buffer{}
-	_, err = io.Copy(&body, resp.Body)
-	if err != nil {
-		if strings.ContainsAny(err.Error(), "tls: user canceled") {
-			shouldIgnoreErrors = true
-		}
-		if !shouldIgnoreErrors {
-			results <- sources.Result{Source: agent.Name(), Error: err}
-			return nil
-		}
-	}
-
-	sub := sources.MatchSubdomains(domain, body.String(), false)
-
-	for _, bing := range sub {
-		if _, ok := Results[bing]; ok {
-			continue
-		}
-		result := sources.Result{Source: agent.Name()}
-		_, host, port := util.GetProtocolHostAndPort(bing)
-		result.Host = host
-		result.Port = port
-		result.Url = bing
-		raw, _ := json.Marshal(result)
-		result.Raw = raw
-		results <- result
-	}
-	if !strings.Contains(body.String(), "<div class=\"sw_next\">") && len(sub) == 0 {
-		return nil
-	}
-	return sub
-}
 func (agent *Agent) queryURL(session *sources.Session, URL string, cookies []*http.Cookie, bingRequest *bingRequest) (*http.Response, error) {
 
-	bingURL := fmt.Sprintf(URL, bingRequest.Q, bingRequest.First)
+	bingURL := fmt.Sprintf(URL, bingRequest.Q, bingRequest.First, bingRequest.Count)
 	request, err := sources.NewHTTPRequest(http.MethodGet, bingURL, nil)
 	if err != nil {
 		return nil, err
@@ -137,6 +64,7 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, cookies []*ht
 	}
 	return session.Do(request, agent.Name())
 }
+
 func (agent *Agent) queryCookies(session *sources.Session) ([]*http.Cookie, error) {
 	request, err := sources.NewHTTPRequest(http.MethodGet, URLInit, nil)
 	if err != nil {

@@ -64,6 +64,7 @@ type Options struct {
 	SiteDossierSpider  goflags.StringSlice
 	AnubisSpider       goflags.StringSlice
 	BaiduSpider        goflags.StringSlice
+	Github             goflags.StringSlice
 	DisableUpdateCheck bool
 	Proxy              string
 	ProxyAuth          string
@@ -93,6 +94,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.CriminalIP, "criminalip", "cl", nil, "search query for criminalip (example: -criminalip 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Github, "github", "gh", nil, "search query for github (example: -github 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.FoFaSpider, "fofa-spider", "fs", nil, "search query for fofa-spider (example: -fofa-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.GoogleSpider, "google-spider", "gs", nil, "search query for google-spider (example: -google-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.BingSpider, "bing-spider", "bs", nil, "search query for bing-spider (example: -bing-spider 'query.txt')", goflags.FileStringSliceOptions),
@@ -175,6 +177,7 @@ func ParseOptions() *Options {
 		len(options.CriminalIP),
 		len(options.Publicwww),
 		len(options.HunterHow),
+		len(options.Github),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -247,6 +250,7 @@ func (options *Options) validateOptions() error {
 		len(options.CriminalIP),
 		len(options.Publicwww),
 		len(options.HunterHow),
+		len(options.Github),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -280,6 +284,7 @@ func (options *Options) validateOptions() error {
 		len(options.CriminalIP),
 		len(options.Publicwww),
 		len(options.HunterHow),
+		len(options.Github),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -322,6 +327,7 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "criminalip", options.CriminalIP...)
 	appendQuery(options, "publicwww", options.Publicwww...)
 	appendQuery(options, "hunterhow", options.HunterHow...)
+	appendQuery(options, "github", options.Github...)
 	appendQuery(options, "fofa-spider", options.FoFaSpider...)
 	appendQuery(options, "google-spider", options.GoogleSpider...)
 	appendQuery(options, "bing-spider", options.BingSpider...)

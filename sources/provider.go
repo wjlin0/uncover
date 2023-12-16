@@ -33,6 +33,7 @@ type Provider struct {
 	Publicwww  []string `yaml:"publicwww"`
 	HunterHow  []string `yaml:"hunterhow"`
 	Binary     []string `yaml:"binary"`
+	Github     []string `yaml:"github"`
 }
 
 // NewProvider loads provider keys from default location and env variables
@@ -103,7 +104,9 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.Binary) > 0 {
 		keys.BinaryToken = provider.Binary[rand.Intn(len(provider.Binary))]
 	}
-
+	if len(provider.Github) > 0 {
+		keys.GithubToken = provider.Github[rand.Intn(len(provider.Github))]
+	}
 	return keys
 }
 
@@ -132,6 +135,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	provider.Publicwww = appendIfExists(provider.Publicwww, "PUBLICWWW_API_KEY")
 	provider.HunterHow = appendIfExists(provider.HunterHow, "HUNTERHOW_API_KEY")
 	provider.Binary = appendIfExists(provider.Binary, "BINARY_API_KEY")
+	provider.Github = appendIfExists(provider.Github, "GITHUB_TOKEN")
 	appendIfAllExists := func(arr []string, env1 string, env2 string) []string {
 		if val1, ok := os.LookupEnv(env1); ok {
 			if val2, ok2 := os.LookupEnv(env2); ok2 {
@@ -159,6 +163,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.CriminalIP) > 0,
 		len(provider.HunterHow) > 0,
 		len(provider.Binary) > 0,
+		len(provider.Github) > 0,
 	)
 }
 

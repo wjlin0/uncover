@@ -8,6 +8,7 @@ import (
 	bing_spider "github.com/wjlin0/uncover/sources/agent/bing-spider"
 	chinaz_spider "github.com/wjlin0/uncover/sources/agent/chinaz-spider"
 	fofa_spider "github.com/wjlin0/uncover/sources/agent/fofa-spider"
+	"github.com/wjlin0/uncover/sources/agent/github"
 	google_spider "github.com/wjlin0/uncover/sources/agent/google-spider"
 	ip138_spider "github.com/wjlin0/uncover/sources/agent/ip138-spider"
 	qianxun_spider "github.com/wjlin0/uncover/sources/agent/qianxun-spider"
@@ -88,6 +89,8 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &hunterhow.Agent{})
 		case "binary":
 			s.Agents = append(s.Agents, &binary.Agent{})
+		case "github":
+			s.Agents = append(s.Agents, &github.Agent{})
 		case "anubis-spider":
 			s.Agents = append(s.Agents, &anubis_spider.Agent{})
 		case "sitedossier-spider":

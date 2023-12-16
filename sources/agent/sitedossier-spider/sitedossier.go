@@ -42,7 +42,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 			size            int
 		)
 		defer func() {
-			gologger.Info().Msgf("%s took %s seconds to enumerate %v results.", agent.Name(), time.Since(start).Round(time.Second).String(), numberOfResults)
+			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
 		}()
 		Results = make(map[string]struct{})
 		size = 1

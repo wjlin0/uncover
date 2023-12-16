@@ -14,6 +14,7 @@ import (
 	qianxun_spider "github.com/wjlin0/uncover/sources/agent/qianxun-spider"
 	rapiddns_spider "github.com/wjlin0/uncover/sources/agent/rapiddns-spider"
 	"github.com/wjlin0/uncover/sources/agent/sitedossier-spider"
+	yahoo_spider "github.com/wjlin0/uncover/sources/agent/yahoo-spider"
 	"sync"
 	"time"
 
@@ -111,7 +112,8 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &rapiddns_spider.Agent{})
 		case "baidu-spider":
 			s.Agents = append(s.Agents, &baidu_spider.Agent{})
-
+		case "yahoo-spider":
+			s.Agents = append(s.Agents, &yahoo_spider.Agent{})
 		}
 	}
 	s.Provider = sources.NewProvider(opts.ProviderConfigLocation)
@@ -217,7 +219,7 @@ func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result 
 func (s *Service) AllAgents() []string {
 	return []string{
 		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
-		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
 	}
 }
 func UncoverAgents() []string {
@@ -227,7 +229,7 @@ func UncoverAgents() []string {
 }
 func AnonymousAgents() []string {
 	return []string{
-		"shodan-idb", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "anubis-spider", "baidu-spider",
+		"shodan-idb", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "anubis-spider", "baidu-spider", "yahoo-spider",
 	}
 }
 func (s *Service) nilCheck() error {
@@ -256,6 +258,6 @@ func (s *Service) hasAnyAnonymousProvider() bool {
 func AllAgents() []string {
 	return []string{
 		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
-		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
 	}
 }

@@ -65,6 +65,7 @@ type Options struct {
 	AnubisSpider       goflags.StringSlice
 	BaiduSpider        goflags.StringSlice
 	Github             goflags.StringSlice
+	YohooSpider        goflags.StringSlice
 	DisableUpdateCheck bool
 	Proxy              string
 	ProxyAuth          string
@@ -105,6 +106,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.SiteDossierSpider, "sitedossier-spider", "sds", nil, "search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.AnubisSpider, "anubis-spider", "as", nil, "search query for anubis-spider (example: -anubis-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.BaiduSpider, "baidu-spider", "bus", nil, "search query for baidu-spider (example: -baidu-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.YohooSpider, "yahoo-spider", "ys", nil, "search query for yahoo-spider (example: -yahoo-spider 'query.txt')", goflags.FileStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
@@ -188,6 +190,7 @@ func ParseOptions() *Options {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
+		len(options.YohooSpider),
 	) {
 		options.Engine = append(options.Engine, "fofa")
 	}
@@ -261,6 +264,7 @@ func (options *Options) validateOptions() error {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
+		len(options.YohooSpider),
 	) {
 		return errors.New("no query provided")
 	}
@@ -295,6 +299,7 @@ func (options *Options) validateOptions() error {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
+		len(options.YohooSpider),
 	) {
 		return errors.New("no engine specified")
 	}
@@ -338,4 +343,5 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "sitedossier-spider", options.SiteDossierSpider...)
 	appendQuery(options, "anubis-spider", options.AnubisSpider...)
 	appendQuery(options, "baidu-spider", options.BaiduSpider...)
+	appendQuery(options, "yahoo-spider", options.YohooSpider...)
 }

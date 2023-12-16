@@ -34,6 +34,7 @@ type Provider struct {
 	HunterHow  []string `yaml:"hunterhow"`
 	Binary     []string `yaml:"binary"`
 	Github     []string `yaml:"github"`
+	FullHunt   []string `json:"fullhunt"`
 }
 
 // NewProvider loads provider keys from default location and env variables
@@ -107,6 +108,9 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.Github) > 0 {
 		keys.GithubToken = provider.Github[rand.Intn(len(provider.Github))]
 	}
+	if len(provider.FullHunt) > 0 {
+		keys.FullHuntToken = provider.FullHunt[rand.Intn(len(provider.FullHunt))]
+	}
 	return keys
 }
 
@@ -136,6 +140,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	provider.HunterHow = appendIfExists(provider.HunterHow, "HUNTERHOW_API_KEY")
 	provider.Binary = appendIfExists(provider.Binary, "BINARY_API_KEY")
 	provider.Github = appendIfExists(provider.Github, "GITHUB_TOKEN")
+	provider.FullHunt = appendIfExists(provider.FullHunt, "FULLHUNT_API_KEY")
 	appendIfAllExists := func(arr []string, env1 string, env2 string) []string {
 		if val1, ok := os.LookupEnv(env1); ok {
 			if val2, ok2 := os.LookupEnv(env2); ok2 {
@@ -164,6 +169,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.HunterHow) > 0,
 		len(provider.Binary) > 0,
 		len(provider.Github) > 0,
+		len(provider.FullHunt) > 0,
 	)
 }
 

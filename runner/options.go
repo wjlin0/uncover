@@ -54,6 +54,7 @@ type Options struct {
 	CriminalIP         goflags.StringSlice
 	Publicwww          goflags.StringSlice
 	HunterHow          goflags.StringSlice
+	FullHunt           goflags.StringSlice
 	FoFaSpider         goflags.StringSlice
 	GoogleSpider       goflags.StringSlice
 	BingSpider         goflags.StringSlice
@@ -65,7 +66,7 @@ type Options struct {
 	AnubisSpider       goflags.StringSlice
 	BaiduSpider        goflags.StringSlice
 	Github             goflags.StringSlice
-	YohooSpider        goflags.StringSlice
+	YahooSpider        goflags.StringSlice
 	DisableUpdateCheck bool
 	Proxy              string
 	ProxyAuth          string
@@ -96,6 +97,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Github, "github", "gh", nil, "search query for github (example: -github 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.FullHunt, "fullhunt", "fh", nil, "search query for fullhunt (example: -fullhunt 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.FoFaSpider, "fofa-spider", "fs", nil, "search query for fofa-spider (example: -fofa-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.GoogleSpider, "google-spider", "gs", nil, "search query for google-spider (example: -google-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.BingSpider, "bing-spider", "bs", nil, "search query for bing-spider (example: -bing-spider 'query.txt')", goflags.FileStringSliceOptions),
@@ -106,7 +108,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.SiteDossierSpider, "sitedossier-spider", "sds", nil, "search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.AnubisSpider, "anubis-spider", "as", nil, "search query for anubis-spider (example: -anubis-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.BaiduSpider, "baidu-spider", "bus", nil, "search query for baidu-spider (example: -baidu-spider 'query.txt')", goflags.FileStringSliceOptions),
-		flagSet.StringSliceVarP(&options.YohooSpider, "yahoo-spider", "ys", nil, "search query for yahoo-spider (example: -yahoo-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.YahooSpider, "yahoo-spider", "ys", nil, "search query for yahoo-spider (example: -yahoo-spider 'query.txt')", goflags.FileStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
@@ -180,6 +182,7 @@ func ParseOptions() *Options {
 		len(options.Publicwww),
 		len(options.HunterHow),
 		len(options.Github),
+		len(options.FullHunt),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -190,7 +193,7 @@ func ParseOptions() *Options {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
-		len(options.YohooSpider),
+		len(options.YahooSpider),
 	) {
 		options.Engine = append(options.Engine, "fofa")
 	}
@@ -254,6 +257,7 @@ func (options *Options) validateOptions() error {
 		len(options.Publicwww),
 		len(options.HunterHow),
 		len(options.Github),
+		len(options.FullHunt),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -264,7 +268,7 @@ func (options *Options) validateOptions() error {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
-		len(options.YohooSpider),
+		len(options.YahooSpider),
 	) {
 		return errors.New("no query provided")
 	}
@@ -289,6 +293,7 @@ func (options *Options) validateOptions() error {
 		len(options.Publicwww),
 		len(options.HunterHow),
 		len(options.Github),
+		len(options.FullHunt),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -299,7 +304,7 @@ func (options *Options) validateOptions() error {
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
-		len(options.YohooSpider),
+		len(options.YahooSpider),
 	) {
 		return errors.New("no engine specified")
 	}
@@ -333,6 +338,7 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "publicwww", options.Publicwww...)
 	appendQuery(options, "hunterhow", options.HunterHow...)
 	appendQuery(options, "github", options.Github...)
+	appendQuery(options, "fullhunt", options.FullHunt...)
 	appendQuery(options, "fofa-spider", options.FoFaSpider...)
 	appendQuery(options, "google-spider", options.GoogleSpider...)
 	appendQuery(options, "bing-spider", options.BingSpider...)
@@ -343,5 +349,5 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "sitedossier-spider", options.SiteDossierSpider...)
 	appendQuery(options, "anubis-spider", options.AnubisSpider...)
 	appendQuery(options, "baidu-spider", options.BaiduSpider...)
-	appendQuery(options, "yahoo-spider", options.YohooSpider...)
+	appendQuery(options, "yahoo-spider", options.YahooSpider...)
 }

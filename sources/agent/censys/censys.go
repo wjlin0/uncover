@@ -70,7 +70,14 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, censysRequest
 	}
 	request.Header.Set("Accept", "application/json")
 	request.SetBasicAuth(session.Keys.CensysToken, session.Keys.CensysSecret)
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, censysURL)
+	}
+	return resp, nil
 }
 
 func (agent *Agent) query(URL string, session *sources.Session, censysRequest *CensysRequest, results chan sources.Result) *CensysResponse {

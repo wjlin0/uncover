@@ -98,5 +98,12 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, hunterRequest
 		return nil, err
 	}
 	request.Header.Set("Accept", "application/json")
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, hunterURL)
+	}
+	return resp, nil
 }

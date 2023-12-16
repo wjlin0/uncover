@@ -69,7 +69,14 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, shodanRequest
 	if err != nil {
 		return nil, err
 	}
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, shodanURL)
+	}
+	return resp, nil
 }
 
 func (agent *Agent) query(URL string, session *sources.Session, shodanRequest *ShodanRequest, results chan sources.Result) *ShodanResponse {

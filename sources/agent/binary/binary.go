@@ -111,5 +111,12 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, binaryRequest
 	}
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Key", session.Keys.BinaryToken)
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, binaryURL)
+	}
+	return resp, nil
 }

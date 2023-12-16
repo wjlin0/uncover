@@ -69,7 +69,14 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, githubRequest
 	}
 	request.Header.Set("Accept", "application/vnd.github.v3.text-match+json")
 	request.Header.Set("Authorization", "token "+session.Keys.GithubToken)
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, githubURL)
+	}
+	return resp, nil
 }
 
 func (agent *Agent) query(URL string, session *sources.Session, githubRequest *githubRequest, results chan sources.Result) []sources.Result {

@@ -72,7 +72,14 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, zoomeyeReques
 		return nil, err
 	}
 	request.Header.Set("API-KEY", session.Keys.ZoomEyeToken)
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, zoomeyeURL)
+	}
+	return resp, nil
 }
 
 func (agent *Agent) query(URL string, session *sources.Session, zoomeyeRequest *ZoomEyeRequest, results chan sources.Result) *ZoomEyeResponse {

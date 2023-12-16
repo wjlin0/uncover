@@ -68,7 +68,14 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, criminalipReq
 		return nil, err
 	}
 	request.Header.Set("x-api-key", session.Keys.CriminalIPToken)
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, criminalipURL)
+	}
+	return resp, nil
 }
 
 func (agent *Agent) query(URL string, session *sources.Session, criminalipRequest *CriminalIPRequest, results chan sources.Result) *CriminalIPResponse {

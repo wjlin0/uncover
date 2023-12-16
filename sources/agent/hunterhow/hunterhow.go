@@ -3,6 +3,7 @@ package hunterhow
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/projectdiscovery/gologger"
 	"net/http"
 	"time"
@@ -108,5 +109,12 @@ func (agent *Agent) queryURL(session *sources.Session, URL string) (*http.Respon
 	if err != nil {
 		return nil, err
 	}
-	return session.Do(request, agent.Name())
+	resp, err := session.Do(request, agent.Name())
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, URL)
+	}
+	return resp, nil
 }

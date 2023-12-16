@@ -1,9 +1,11 @@
 package sources
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,23 +19,26 @@ import (
 // DefaultRateLimits of all/most of uncover are hardcoded by default to improve performance
 // engine is not present in default ratelimits then user given ratelimit from cli options is used
 var DefaultRateLimits = map[string]*ratelimit.Options{
-	"shodan":        {Key: "shodan", MaxCount: 1, Duration: time.Second},
-	"shodan-idb":    {Key: "shodan-idb", MaxCount: 1, Duration: time.Second},
-	"fofa":          {Key: "fofa", MaxCount: 1, Duration: time.Second},
-	"censys":        {Key: "censys", MaxCount: 1, Duration: 3 * time.Second},
-	"quake":         {Key: "quake", MaxCount: 1, Duration: time.Second},
-	"hunter":        {Key: "hunter", MaxCount: 15, Duration: time.Second},
-	"zoomeye":       {Key: "zoomeye", MaxCount: 1, Duration: time.Second},
-	"netlas":        {Key: "netlas", MaxCount: 1, Duration: time.Second},
-	"criminalip":    {Key: "criminalip", MaxCount: 1, Duration: time.Second},
-	"publicwww":     {Key: "publicwww", MaxCount: 1, Duration: time.Minute},
-	"hunterhow":     {Key: "hunterhow", MaxCount: 1, Duration: 3 * time.Second},
-	"binary":        {Key: "binary", MaxCount: 1, Duration: time.Second},
-	"fofa-spider":   {Key: "fofa-spider", MaxCount: 5, Duration: time.Second},
-	"bing-spider":   {Key: "bing-spider", MaxCount: 1, Duration: time.Second},
-	"google-spider": {Key: "google-spider", MaxCount: 1, Duration: time.Second},
-	"chinaz-spider": {Key: "chinaz-spider", MaxCount: 1, Duration: time.Second},
-	"ip138-spider":  {Key: "ip138-spider", MaxCount: 1, Duration: time.Second},
+	"shodan":         {Key: "shodan", MaxCount: 1, Duration: time.Second},
+	"shodan-idb":     {Key: "shodan-idb", MaxCount: 1, Duration: time.Second},
+	"fofa":           {Key: "fofa", MaxCount: 1, Duration: time.Second},
+	"censys":         {Key: "censys", MaxCount: 1, Duration: 3 * time.Second},
+	"quake":          {Key: "quake", MaxCount: 1, Duration: time.Second},
+	"hunter":         {Key: "hunter", MaxCount: 15, Duration: time.Second},
+	"zoomeye":        {Key: "zoomeye", MaxCount: 1, Duration: time.Second},
+	"netlas":         {Key: "netlas", MaxCount: 1, Duration: time.Second},
+	"criminalip":     {Key: "criminalip", MaxCount: 1, Duration: time.Second},
+	"publicwww":      {Key: "publicwww", MaxCount: 1, Duration: time.Minute},
+	"hunterhow":      {Key: "hunterhow", MaxCount: 1, Duration: 3 * time.Second},
+	"binary":         {Key: "binary", MaxCount: 1, Duration: time.Second},
+	"fofa-spider":    {Key: "fofa-spider", MaxCount: 5, Duration: time.Second},
+	"bing-spider":    {Key: "bing-spider", MaxCount: 1, Duration: time.Second},
+	"google-spider":  {Key: "google-spider", MaxCount: 1, Duration: time.Second},
+	"chinaz-spider":  {Key: "chinaz-spider", MaxCount: 1, Duration: time.Second},
+	"ip138-spider":   {Key: "ip138-spider", MaxCount: 1, Duration: time.Second},
+	"qianxun-spider": {Key: "qianxun-spider", MaxCount: 1, Duration: time.Second},
+	"anubis-spider":  {Key: "anubis-spider", MaxCount: 1, Duration: time.Second},
+	"baidu-spider":   {Key: "baidu-spider", MaxCount: 5, Duration: time.Second},
 }
 
 // Session handles session agent sessions
@@ -96,6 +101,9 @@ func NewSession(keys *Keys, retryMax, timeout, rateLimit int, engines []string, 
 	httpclient := &http.Client{
 		Transport: Transport,
 		Timeout:   time.Duration(timeout) * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
 	}
 
 	options := retryablehttp.Options{RetryMax: retryMax}
@@ -148,9 +156,21 @@ func (s *Session) Do(request *retryablehttp.Request, source string) (*http.Respo
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK {
-		requestURL, _ := url.QueryUnescape(request.URL.String())
-		return resp, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, requestURL)
-	}
+	//if resp.StatusCode != http.StatusOK {
+	//	requestURL, _ := url.QueryUnescape(request.URL.String())
+	//	return resp, fmt.Errorf("unexpected status code %d received from %s", resp.StatusCode, requestURL)
+	//}
 	return resp, nil
+}
+
+func ReadBody(resp *http.Response) (*bytes.Buffer, error) {
+	defer resp.Body.Close()
+	body := bytes.Buffer{}
+	_, err := io.Copy(&body, resp.Body)
+	if err != nil {
+		if !strings.ContainsAny(err.Error(), "tls: user canceled") {
+			return nil, err
+		}
+	}
+	return &body, nil
 }

@@ -63,6 +63,7 @@ type Options struct {
 	QianXunSpider      goflags.StringSlice
 	SiteDossierSpider  goflags.StringSlice
 	AnubisSpider       goflags.StringSlice
+	BaiduSpider        goflags.StringSlice
 	DisableUpdateCheck bool
 	Proxy              string
 	ProxyAuth          string
@@ -101,6 +102,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.QianXunSpider, "qianxun-spider", "qs", nil, "search query for qianxun-spider (example: -qianxun-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.SiteDossierSpider, "sitedossier-spider", "sds", nil, "search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.AnubisSpider, "anubis-spider", "as", nil, "search query for anubis-spider (example: -anubis-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.BaiduSpider, "baidu-spider", "bus", nil, "search query for baidu-spider (example: -baidu-spider 'query.txt')", goflags.FileStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
@@ -182,6 +184,7 @@ func ParseOptions() *Options {
 		len(options.QianXunSpider),
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
+		len(options.BaiduSpider),
 	) {
 		options.Engine = append(options.Engine, "fofa")
 	}
@@ -253,6 +256,7 @@ func (options *Options) validateOptions() error {
 		len(options.QianXunSpider),
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
+		len(options.BaiduSpider),
 	) {
 		return errors.New("no query provided")
 	}
@@ -285,6 +289,7 @@ func (options *Options) validateOptions() error {
 		len(options.QianXunSpider),
 		len(options.SiteDossierSpider),
 		len(options.AnubisSpider),
+		len(options.BaiduSpider),
 	) {
 		return errors.New("no engine specified")
 	}
@@ -326,4 +331,5 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "qianxun-spider", options.QianXunSpider...)
 	appendQuery(options, "sitedossier-spider", options.SiteDossierSpider...)
 	appendQuery(options, "anubis-spider", options.AnubisSpider...)
+	appendQuery(options, "baidu-spider", options.BaiduSpider...)
 }

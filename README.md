@@ -51,6 +51,8 @@
     - **[Rapiddns-Spider](https://rapiddns.io/subdomain/)**
     - **[Anubis-Spider](https://jldc.me/anubis/subdomains/)**
     - **[Baidu-Spider](https://www.baidu.com/)**
+    - **[Yahoo-Spider](https://www.yahoo.com/)**
+    - **[Shodan-InternetDB](https://internetdb.shodan.io)**
 ## Installation Instructions
 
 uncover requires **go1.20** to install successfully. Run the following command to get the repo -
@@ -74,7 +76,7 @@ Usage:
 Flags:
 INPUT:
    -q, -query string[]   search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')
-   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider] (default fofa)
+   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider yahoo-spider] (default fofa)
 
 SEARCH-ENGINE:
    -s, -shodan string[]                search query for shodan (example: -shodan 'query.txt')
@@ -99,6 +101,7 @@ SEARCH-ENGINE:
    -sds, -sitedossier-spider string[]  search query for sitedossier-spider (example: -sitedossier-spider 'query.txt')
    -as, -anubis-spider string[]        search query for anubis-spider (example: -anubis-spider 'query.txt')
    -bus, -baidu-spider string[]        search query for baidu-spider (example: -baidu-spider 'query.txt')
+   -ys, -yahoo-spider string[]         search query for yahoo-spider (example: -yahoo-spider 'query.txt')
 
 CONFIG:
    -pc, -provider string         provider configuration file (default "C:\\Users\\wjl\\.config\\uncover\\provider-config.yaml")
@@ -205,7 +208,7 @@ echo 'ssl:"Uber Technologies, Inc."' | uncover
   __  ______  _________ _   _____  _____
  / / / / __ \/ ___/ __ \ | / / _ \/ ___/
 / /_/ / / / / /__/ /_/ / |/ /  __/ /    
-\__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9    
+\__,_/_/ /_/\___/\____/|___/\___/_/ v1.0.2    
                                         
 
 		wjlin0.com
@@ -242,7 +245,7 @@ uncover -q dorks.txt
   __  ______  _________ _   _____  _____
  / / / / __ \/ ___/ __ \ | / / _ \/ ___/
 / /_/ / / / / /__/ /_/ / |/ /  __/ /    
-\__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9    
+\__,_/_/ /_/\___/\____/|___/\___/_/ v1.0.2    
                                         
 
     wjlin0.com
@@ -275,7 +278,7 @@ echo jira | uncover -e shodan,censys,fofa,quake,hunter,zoomeye,netlas,criminalip
   __  ______  _________ _   _____  _____
  / / / / __ \/ ___/ __ \ | / / _ \/ ___/
 / /_/ / / / / /__/ /_/ / |/ /  __/ /    
-\__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9  
+\__,_/_/ /_/\___/\____/|___/\___/_/ v1.0.2  
                                         
 
     wjlin0.com
@@ -307,7 +310,7 @@ uncover -shodan 'http.component:"Atlassian Jira"' -censys 'services.software.pro
   __  ______  _________ _   _____  _____
  / / / / __ \/ ___/ __ \ | / / _ \/ ___/
 / /_/ / / / / /__/ /_/ / |/ /  __/ /    
-\__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9
+\__,_/_/ /_/\___/\____/|___/\___/_/ v1.0.2
                                         
 
     wjlin0.com
@@ -347,7 +350,7 @@ echo 51.83.59.99/24 | uncover
   __  ______  _________ _   _____  _____
  / / / / __ \/ ___/ __ \ | / / _ \/ ___/
 / /_/ / / / / /__/ /_/ / |/ /  __/ /    
-\__,_/_/ /_/\___/\____/|___/\___/_/ v0.0.9  
+\__,_/_/ /_/\___/\____/|___/\___/_/ v1.0.2  
                                         
 
     wjlin0.com

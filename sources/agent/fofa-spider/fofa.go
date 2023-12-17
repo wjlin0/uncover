@@ -10,8 +10,8 @@ import (
 	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/pathScan/pkg/util"
 	"github.com/wjlin0/uncover/sources"
-	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -48,7 +48,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 				wg.Add(1)
 				go func(q string) {
 					defer wg.Done()
-					spiderResult := agent.query(session, q, URL, results)
+					spiderResult := agent.query(session, q, URL, query.Limit, results)
 					lock.Lock()
 					numberOfResults += len(spiderResult)
 					lock.Unlock()
@@ -92,29 +92,54 @@ func (agent *Agent) queryStatsList(STATS string, session *sources.Session, query
 	return fofaResponse, nil
 }
 
-func (agent *Agent) query(session *sources.Session, query string, URL string, result chan sources.Result) []sources.Result {
+func (agent *Agent) query(session *sources.Session, query string, URL string, limit int, result chan sources.Result) []sources.Result {
 	var (
-		shouldIgnoreErrors bool
-		spiderResult       []sources.Result
+		spiderResult []sources.Result
 	)
-	resp, err := agent.queryURL(session, query, URL)
-	if err != nil {
-		result <- sources.Result{Source: agent.Name(), Error: err}
-		return nil
-	}
-	defer resp.Body.Close()
-	body := bytes.Buffer{}
-	_, err = io.Copy(&body, resp.Body)
-	if err != nil {
-		if strings.ContainsAny(err.Error(), "tls: user canceled") {
-			shouldIgnoreErrors = true
+	page := 1
+	for {
+		fofa := &fofaRequest{
+			Query:   query,
+			Page:    page,
+			PageNum: 10,
 		}
-		if !shouldIgnoreErrors {
-			result <- sources.Result{Source: agent.Name(), Error: err}
-			return nil
+		resp, err := agent.queryURL(session, fofa, URL)
+		if err != nil {
+			continue
 		}
+		body, err := sources.ReadBody(resp)
+		if err != nil || body == nil {
+			continue
+		}
+		rs := parseResult(*body)
+		for _, r := range rs {
+			result <- r
+		}
+
+		if page*10 > limit || len(spiderResult) > limit || len(rs) == 0 || len(rs) > limit || !strings.Contains(string(body.Bytes()), "<div class=\"hsxa-meta-data-list\">") {
+			break
+		}
+		page++
+		spiderResult = append(spiderResult, rs...)
 	}
 
+	return spiderResult
+}
+func (agent *Agent) queryURL(session *sources.Session, fofaRequest *fofaRequest, URL string) (*http.Response, error) {
+
+	spiderURL := fmt.Sprintf(URL, fofaRequest.Query, fofaRequest.Page, fofaRequest.PageNum)
+	request, err := sources.NewHTTPRequest(http.MethodGet, spiderURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	if cookies := os.Getenv("FOFA_COOKIE"); cookies != "" {
+		request.Header.Set("Cookie", cookies)
+	}
+	request.Header.Set("Referer", URL)
+	return session.Do(request, agent.Name())
+}
+
+func parseResult(body bytes.Buffer) (results []sources.Result) {
 	doc, err := htmlquery.Parse(&body)
 	if err != nil {
 		return nil
@@ -145,19 +170,8 @@ func (agent *Agent) query(session *sources.Session, query string, URL string, re
 		raw, _ := json.Marshal(r)
 		r.Raw = raw
 		if r.Host != "" || r.IP != "" {
-			result <- r
-			spiderResult = append(spiderResult, r)
+			results = append(results, r)
 		}
 	}
-	return spiderResult
-}
-func (agent *Agent) queryURL(session *sources.Session, query string, URL string) (*http.Response, error) {
-
-	spiderURL := fmt.Sprintf(URL, query, 1, 10)
-	request, err := sources.NewHTTPRequest(http.MethodGet, spiderURL, nil)
-	if err != nil {
-		return nil, err
-	}
-	request.Header.Set("Referer", URL)
-	return session.Do(request, agent.Name())
+	return results
 }

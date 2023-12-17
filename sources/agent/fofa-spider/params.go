@@ -20,6 +20,12 @@ const (
 	URL     = "https://fofa.info/result?qbase64=%s&page=%d&page_size=%d"
 )
 
+type fofaRequest struct {
+	Query   string `json:"query"`
+	Page    int    `json:"page"`
+	PageNum int    `json:"page_num"`
+}
+
 var rsaPrivateKey *rsa.PrivateKey
 
 func init() {

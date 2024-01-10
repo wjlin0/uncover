@@ -37,7 +37,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 
 		shodanRequest := &ShodanRequest{Query: query.Query}
 		sub := agent.query(URL, session, shodanRequest, results)
-		gologger.Info().Msgf("%s took %s seconds to enumerate %v results.", agent.Name(), time.Since(start).Round(time.Second).String(), sub)
+		gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), len(sub))
 	}()
 
 	return results, nil

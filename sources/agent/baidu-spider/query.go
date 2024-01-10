@@ -145,7 +145,6 @@ func (q *query) matchLocation(url string) []string {
 	if err != nil {
 		return nil
 	}
-	//gologger.Debug().Msgf("%s took %s seconds to enumerate %v results.", q.agent.Name(), time.Since(start).Round(time.Second).String(), url)
 	if get := resp.Header.Get("Location"); get != "" {
 		switch {
 		case strings.HasPrefix(get, "/"):

@@ -55,7 +55,7 @@
     - **[Shodan-InternetDB](https://internetdb.shodan.io)**
 ## Installation Instructions
 
-uncover requires **go1.20** to install successfully. Run the following command to get the repo -
+uncover requires **go1.21** to install successfully. Run the following command to get the repo -
 
 ```sh
 go install -v github.com/wjlin0/uncover/cmd/uncover@latest

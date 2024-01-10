@@ -38,6 +38,10 @@ import (
 
 var DefaultChannelBuffSize = 32
 
+var DefaultCallback = func(query string, agent string) string {
+	return query
+}
+
 type Options struct {
 	Agents   []string // Uncover Agents to use
 	Queries  []string // Queries to pass to Agents
@@ -161,7 +165,7 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 				continue agentLabel
 			}
 			ch, err := agent.Query(s.Session, &sources.Query{
-				Query: q,
+				Query: DefaultCallback(q, agent.Name()),
 				Limit: s.Options.Limit,
 			})
 			if err != nil {

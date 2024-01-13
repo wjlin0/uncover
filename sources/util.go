@@ -24,7 +24,11 @@ func GetHostname(u string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return parsedURL.Hostname(), nil
+	hostname := parsedURL.Hostname()
+	if hostname == "" {
+		return "", fmt.Errorf("invalid url")
+	}
+	return hostname, nil
 }
 
 var ifDomainReg = regexp.MustCompile("(?i)[a-z0-9][-a-z0-9]{0,62}(\\.[a-z0-9][-a-z0-9]{0,62})+$")

@@ -97,7 +97,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.ZoomEye, "zoomeye", "ze", nil, "search query for zoomeye (example: -zoomeye 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Netlas, "netlas", "ne", nil, "search query for netlas (example: -netlas 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Binaryedge, "binaryedge", "be", nil, "search query for binaryedge (example: -binaryedge 'query.txt')", goflags.FileStringSliceOptions),
-		flagSet.StringSliceVarP(&options.Zone, "zone", "zn", nil, "search query for 0zone (example: -zone 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Zone, "zone0", "z0", nil, "search query for zone0 (example: -zone0 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.CriminalIP, "criminalip", "cl", nil, "search query for criminalip (example: -criminalip 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
@@ -350,7 +350,7 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "hunterhow", options.HunterHow...)
 	appendQuery(options, "binaryedge", options.Binaryedge...)
 	appendQuery(options, "github", options.Github...)
-	appendQuery(options, "zone", options.Zone...)
+	appendQuery(options, "zone0", options.Zone...)
 	appendQuery(options, "fullhunt", options.FullHunt...)
 	appendQuery(options, "fofa-spider", options.FoFaSpider...)
 	appendQuery(options, "google-spider", options.GoogleSpider...)

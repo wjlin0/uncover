@@ -136,6 +136,24 @@ func (a anubisSpiderTestcases) Execute() error {
 	return expectResultsGreaterThanCount(results, 0)
 }
 
+type zone0Testcases struct{}
+
+func (z zone0Testcases) Execute() error {
+	//TODO implement me
+	token := os.Getenv("ZONE0_API_KEY")
+	if token == "" {
+		return errors.New("missing zone0 api key")
+	}
+	zone0Token := fmt.Sprintf(`zone0: [%s]`, token)
+	_ = os.WriteFile(ConfigFile, []byte(zone0Token), os.ModePerm)
+	defer os.RemoveAll(ConfigFile)
+	results, err := testutils.RunUncoverAndGetResults(debug, "-zone0", "baidu.com")
+	if err != nil {
+		return err
+	}
+	return expectResultsGreaterThanCount(results, 0)
+}
+
 type publicwwwTestcases struct {
 }
 

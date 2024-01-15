@@ -41,6 +41,9 @@
     - **[HunterHow](https://hunter.how)**
     - **[Binary](https://www.binaryedge.io/)**
     - **[Github](https://github.com/)**
+    - **[FullHunt](https://fullhunt.io/)**
+    - **[Zone0](https://zone0.io/)**
+    - **[Shodan-InternetDB](https://internetdb.shodan.io)**
     - **[Bing-Spider](https://www.bing.com/)**
     - **[Google-Spider](https://www.baidu.com/)**
     - **[Sitedossier-Spider](http://www.sitedossier.com/)**
@@ -71,12 +74,12 @@ This will display help for the tool. Here are all the flags it supports:
 
 ```console
 Usage:
-  ./uncover [flags]
+  uncover [flags]
 
 Flags:
 INPUT:
    -q, -query string[]   search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')
-   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binary shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider yahoo-spider] (default fofa)
+   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binaryedge github fullhunt zone0 shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider yahoo-spider] (default fofa)
 
 SEARCH-ENGINE:
    -s, -shodan string[]                search query for shodan (example: -shodan 'query.txt')
@@ -87,10 +90,13 @@ SEARCH-ENGINE:
    -ht, -hunter string[]               search query for hunter (example: -hunter 'query.txt')
    -ze, -zoomeye string[]              search query for zoomeye (example: -zoomeye 'query.txt')
    -ne, -netlas string[]               search query for netlas (example: -netlas 'query.txt')
+   -be, -binaryedge string[]           search query for binaryedge (example: -binaryedge 'query.txt')
+   -z0, -zone0 string[]                search query for zone0 (example: -zone0 'query.txt')
    -cl, -criminalip string[]           search query for criminalip (example: -criminalip 'query.txt')
    -pw, -publicwww string[]            search query for publicwww (example: -publicwww 'query.txt')
    -hh, -hunterhow string[]            search query for hunterhow (example: -hunterhow 'query.txt')
    -gh, -github string[]               search query for github (example: -github 'query.txt')
+   -fh, -fullhunt string[]             search query for fullhunt (example: -fullhunt 'query.txt')
    -fs, -fofa-spider string[]          search query for fofa-spider (example: -fofa-spider 'query.txt')
    -gs, -google-spider string[]        search query for google-spider (example: -google-spider 'query.txt')
    -bs, -bing-spider string[]          search query for bing-spider (example: -bing-spider 'query.txt')
@@ -104,8 +110,8 @@ SEARCH-ENGINE:
    -ys, -yahoo-spider string[]         search query for yahoo-spider (example: -yahoo-spider 'query.txt')
 
 CONFIG:
-   -pc, -provider string         provider configuration file (default "C:\\Users\\wjl\\.config\\uncover\\provider-config.yaml")
-   -config string                flag configuration file (default "C:\\Users\\wjl\\AppData\\Roaming\\uncover\\config.yaml")
+   -pc, -provider string         provider configuration file (default "/Users/wjl/.config/uncover/provider-config.yaml")
+   -config string                flag configuration file (default "/Users/wjl/Library/Application Support/uncover/config.yaml")
    -timeout int                  timeout in seconds (default 30)
    -rl, -rate-limit int          maximum number of http requests to send per second
    -rlm, -rate-limit-minute int  maximum number of requests to send per minute
@@ -182,6 +188,9 @@ fullhunt:
 binaryedge:
   - BINARYEDGE_API_KEY_1
   - BINARYEDGE_API_KEY_2
+zone0:
+  - ZONE0_API_KEY_1
+  - ZONE0_API_KEY_2
 ```
 
 When multiple keys/credentials are specified for same provider in the config file, random key will be used for each execution.
@@ -195,7 +204,6 @@ export GITHUB_TOKEN=xxx
 export QUAKE_TOKEN=xxx
 export BINARYEDGE_API_KEY=xxx
 export HUNTER_API_KEY=xxx
-export ZOOE_API_KEY=xxx
 export NETLAS_API_KEY=xxx
 export CENSYS_API_ID=xxx
 export CENSYS_API_SECRET=xxx
@@ -203,7 +211,9 @@ export FOFA_EMAIL=xxx
 export FOFA_KEY=xxx
 export FULLHUNT_API_KEY=xxx
 export HUNTERHOW_API_KEY=xxx
+export PUBLICWWW_API_KEY=xxx
 export CRIMINALIP_API_KEY=xxx
+export ZOOE0_API_KEY=xxx
 ```
 
 Required API keys can be obtained by signing up on following platform [Shodan](https://account.shodan.io/register), [Censys](https://censys.io/register), [Fofa](https://fofa.info/toLogin), [Quake](https://quake.360.net/quake/#/index), [Hunter](https://user.skyeye.qianxin.com/user/register?next=https%3A//hunter.qianxin.com/api/uLogin&fromLogin=1), [ZoomEye](https://www.zoomeye.org/login), [Netlas](https://app.netlas.io/registration/), [CriminalIP](https://www.criminalip.io/register), [Publicwww](https://publicwww.com/profile/signup.html) and [binary](https://app.binaryedge.io/login)

@@ -35,6 +35,7 @@ type Provider struct {
 	Binaryedge []string `yaml:"binaryedge"`
 	Github     []string `yaml:"github"`
 	FullHunt   []string `json:"fullhunt"`
+	Zone0      []string `json:"zone0"`
 }
 
 // NewProvider loads provider keys from default location and env variables
@@ -111,6 +112,9 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.FullHunt) > 0 {
 		keys.FullHuntToken = provider.FullHunt[rand.Intn(len(provider.FullHunt))]
 	}
+	if len(provider.Zone0) > 0 {
+		keys.Zone0Token = provider.Zone0[rand.Intn(len(provider.Zone0))]
+	}
 	return keys
 }
 
@@ -141,6 +145,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	provider.Binaryedge = appendIfExists(provider.Binaryedge, "BINARYEDGE_API_KEY")
 	provider.Github = appendIfExists(provider.Github, "GITHUB_TOKEN")
 	provider.FullHunt = appendIfExists(provider.FullHunt, "FULLHUNT_API_KEY")
+	provider.Zone0 = appendIfExists(provider.Zone0, "ZONE0_API_KEY")
 	appendIfAllExists := func(arr []string, env1 string, env2 string) []string {
 		if val1, ok := os.LookupEnv(env1); ok {
 			if val2, ok2 := os.LookupEnv(env2); ok2 {
@@ -170,6 +175,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.Binaryedge) > 0,
 		len(provider.Github) > 0,
 		len(provider.FullHunt) > 0,
+		len(provider.Zone0) > 0,
 	)
 }
 

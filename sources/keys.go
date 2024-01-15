@@ -16,6 +16,7 @@ type Keys struct {
 	BinaryedgeToken string
 	GithubToken     string
 	FullHuntToken   string
+	Zone0Token      string
 }
 
 func (keys Keys) Empty() bool {
@@ -33,5 +34,6 @@ func (keys Keys) Empty() bool {
 		keys.HunterHowToken == "" &&
 		keys.BinaryedgeToken == "" &&
 		keys.GithubToken == "" &&
-		keys.FullHuntToken == ""
+		keys.FullHuntToken == "" &&
+		keys.Zone0Token == ""
 }

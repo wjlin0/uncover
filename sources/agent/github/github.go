@@ -15,17 +15,18 @@ import (
 const (
 	URL     = "https://api.github.com/search/code?q=%s&per_page=%d&page=%d&sort=indexed&access_token=%s"
 	PerPage = 100
+	Source  = "github"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "github"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.GithubToken == "" {
-		return nil, errors.New("empty github keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	start := time.Now()
 	results := make(chan sources.Result)

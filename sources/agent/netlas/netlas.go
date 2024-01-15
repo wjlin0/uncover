@@ -15,17 +15,18 @@ const (
 	baseURL      = "https://app.netlas.io/"
 	baseEndpoint = "api/responses/"
 	contentType  = "application/json"
+	Source       = "netlas"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "netlas"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.NetlasToken == "" {
-		return nil, errors.New("empty netlas keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 
 	results := make(chan sources.Result)

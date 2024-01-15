@@ -16,17 +16,18 @@ import (
 const (
 	URL        = "https://search.censys.io/api/v2/hosts/search?q=%s&per_page=%d&virtual_hosts=INCLUDE"
 	MaxPerPage = 100
+	Source     = "censys"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "censys"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.CensysToken == "" || session.Keys.CensysSecret == "" {
-		return nil, errors.New("empty censys keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
 	start := time.Now()

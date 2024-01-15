@@ -19,17 +19,18 @@ const (
 	URL    = "https://fofa.info/api/v1/search/all?email=%s&key=%s&qbase64=%s&fields=%s&page=%d&size=%d"
 	Fields = "ip,port,host"
 	Size   = 100
+	Source = "fofa"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "fofa"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.FofaEmail == "" || session.Keys.FofaKey == "" {
-		return nil, errors.New("empty fofa keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	start := time.Now()
 	results := make(chan sources.Result)

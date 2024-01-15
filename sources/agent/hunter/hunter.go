@@ -13,19 +13,20 @@ import (
 )
 
 const (
-	URL  = "https://hunter.qianxin.com/openApi/search?api-key=%s&search=%s&page=%d&page_size=%d"
-	Size = 100
+	URL    = "https://hunter.qianxin.com/openApi/search?api-key=%s&search=%s&page=%d&page_size=%d"
+	Size   = 100
+	Source = "hunter"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "hunter"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.HunterToken == "" {
-		return nil, errors.New("empty hunter keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	start := time.Now()
 	results := make(chan sources.Result)

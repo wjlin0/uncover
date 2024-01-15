@@ -26,7 +26,7 @@ func (agent *Agent) Name() string {
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.ZoomEyeToken == "" {
-		return nil, errors.New("empty zoomeye keys")
+		return nil, errors.New(fmt.Sprintf("empty zoomeye keys please read docs %s on how to add keys ", "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
 	start := time.Now()

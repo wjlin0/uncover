@@ -14,18 +14,19 @@ import (
 )
 
 const (
-	URL = "https://api.shodan.io/shodan/host/search?key=%s&query=%s&page=%d"
+	URL    = "https://api.shodan.io/shodan/host/search?key=%s&query=%s&page=%d"
+	Source = "shodan"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "shodan"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.Shodan == "" {
-		return nil, errors.New("empty shodan keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
 	start := time.Now()

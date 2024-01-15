@@ -14,18 +14,19 @@ import (
 )
 
 const (
-	URL = "https://api.criminalip.io/v1/banner/search?query=%s&offset=%d"
+	URL    = "https://api.criminalip.io/v1/banner/search?query=%s&offset=%d"
+	Source = "criminalip"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "criminalip"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.CriminalIPToken == "" {
-		return nil, errors.New("empty criminalip keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
 	start := time.Now()

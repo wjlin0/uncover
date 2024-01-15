@@ -18,16 +18,17 @@ type Agent struct {
 }
 
 const (
-	URL  = "https://api.binaryedge.io/v2/query/domains/subdomain/%s?page=%d&pageSize=%d"
-	Size = 100
+	URL    = "https://api.binaryedge.io/v2/query/domains/subdomain/%s?page=%d&pageSize=%d"
+	Size   = 100
+	Source = "binaryedge"
 )
 
 func (agent *Agent) Name() string {
-	return "binaryedge"
+	return Source
 }
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.BinaryedgeToken == "" {
-		return nil, errors.New("empty binaryedge keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
 	start := time.Now()

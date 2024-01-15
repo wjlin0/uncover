@@ -15,19 +15,20 @@ import (
 )
 
 const (
-	URL  = "https://quake.360.net/api/v3/search/quake_service"
-	Size = 100
+	URL    = "https://quake.360.net/api/v3/search/quake_service"
+	Size   = 100
+	Source = "quake"
 )
 
 type Agent struct{}
 
 func (agent *Agent) Name() string {
-	return "quake"
+	return Source
 }
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	if session.Keys.QuakeToken == "" {
-		return nil, errors.New("empty quake keys")
+		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 
 	results := make(chan sources.Result)

@@ -30,7 +30,6 @@ func newQuery(session *sources.Session, cookies []*http.Cookie, agent *Agent, qu
 		Domain:     query2.Query,
 		Subdomains: map[string]struct{}{},
 		PageNum:    0,
-		PerPageNum: 50,
 		session:    session,
 		agent:      agent,
 		result:     result,
@@ -47,7 +46,6 @@ func (q *query) search(domain string, filteredSubdomain string) {
 		bing := &bingRequest{
 			Q:     bingQuery,
 			First: q.PageNum,
-			Count: q.PerPageNum,
 		}
 		resp, err := q.agent.queryURL(q.session, URL, q.cookies, bing)
 		if err != nil {
@@ -74,7 +72,7 @@ func (q *query) search(domain string, filteredSubdomain string) {
 		}
 
 		q.updates(subdomains)
-		q.PageNum += q.PerPageNum
+		q.PageNum += 10
 		if !strings.Contains(body.String(), "<div class=\"sw_next\">") {
 			break
 		}

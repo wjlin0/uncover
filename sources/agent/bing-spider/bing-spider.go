@@ -2,6 +2,7 @@ package bing_spider
 
 import (
 	"fmt"
+	"github.com/corpix/uarand"
 	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"net/http"
@@ -9,10 +10,10 @@ import (
 )
 
 const (
-	URL     = "https://www.bing.com/search?q=%s&first=%d&count=%d"
+	URL     = "https://www.bing.com/search?q=%s&first=%d"
 	URLInit = "https://www.bing.com/"
 	Source  = "bing-spider"
-	Limit   = 500
+	Limit   = 100
 )
 
 type Agent struct {
@@ -22,7 +23,6 @@ type Agent struct {
 type bingRequest struct {
 	Q     string `json:"q"`
 	First int    `json:"first"`
-	Count int    `json:"count"`
 }
 
 func (agent *Agent) Name() string {
@@ -54,11 +54,16 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 }
 func (agent *Agent) queryURL(session *sources.Session, URL string, cookies []*http.Cookie, bingRequest *bingRequest) (*http.Response, error) {
 
-	bingURL := fmt.Sprintf(URL, bingRequest.Q, bingRequest.First, bingRequest.Count)
+	bingURL := fmt.Sprintf(URL, bingRequest.Q, bingRequest.First)
 	request, err := sources.NewHTTPRequest(http.MethodGet, bingURL, nil)
 	if err != nil {
 		return nil, err
 	}
+	request.Header.Set("Upgrade-Insecure-Requests", "1")
+	request.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+	// 使用随机生成的User-Agent
+	request.Header.Set("User-Agent", uarand.GetRandom())
 	for _, cookie := range cookies {
 		request.AddCookie(cookie)
 	}
@@ -70,6 +75,8 @@ func (agent *Agent) queryCookies(session *sources.Session) ([]*http.Cookie, erro
 	if err != nil {
 		return nil, err
 	}
+	request.Header.Set("User-Agent", uarand.GetRandom())
+	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	resp, err := session.Do(request, agent.Name())
 	if err != nil {
 		return nil, err

@@ -30,7 +30,7 @@ var DefaultRateLimits = map[string]*ratelimit.Options{
 	"criminalip":         {Key: "criminalip", MaxCount: 1, Duration: time.Second},
 	"publicwww":          {Key: "publicwww", MaxCount: 1, Duration: time.Minute},
 	"hunterhow":          {Key: "hunterhow", MaxCount: 1, Duration: 3 * time.Second},
-	"binary":             {Key: "binary", MaxCount: 1, Duration: time.Second},
+	"binaryedge":         {Key: "binaryedge", MaxCount: 1, Duration: time.Second},
 	"fullhunt":           {Key: "fullhunt", MaxCount: 1, Duration: time.Second},
 	"fofa-spider":        {Key: "fofa-spider", MaxCount: 5, Duration: time.Second},
 	"bing-spider":        {Key: "bing-spider", MaxCount: 1, Duration: time.Second},

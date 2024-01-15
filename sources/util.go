@@ -15,7 +15,7 @@ func NewHTTPRequest(method, url string, body io.Reader) (*retryablehttp.Request,
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("User-Agent", "PathScan - FOSS Project (github.com/wjlin0/pathScan)")
+	request.Header.Set("User-Agent", "Uncover - FOSS Project (github.com/wjlin0/uncover)")
 	return request, nil
 }
 

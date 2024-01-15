@@ -27,46 +27,49 @@ var (
 
 // Options contains the configuration options for tuning the enumeration process.
 type Options struct {
-	Query              goflags.StringSlice
-	Engine             goflags.StringSlice
-	ConfigFile         string
-	ProviderFile       string
-	OutputFile         string
-	OutputFields       string
-	JSON               bool
-	Raw                bool
-	Limit              int
-	Silent             bool
-	Verbose            bool
-	NoColor            bool
-	Timeout            int
-	RateLimit          int
-	RateLimitMinute    int
-	Retries            int
-	Shodan             goflags.StringSlice
-	ShodanIdb          goflags.StringSlice
-	Fofa               goflags.StringSlice
-	Censys             goflags.StringSlice
-	Quake              goflags.StringSlice
-	Netlas             goflags.StringSlice
-	Hunter             goflags.StringSlice
-	ZoomEye            goflags.StringSlice
-	CriminalIP         goflags.StringSlice
-	Publicwww          goflags.StringSlice
-	HunterHow          goflags.StringSlice
-	FullHunt           goflags.StringSlice
-	FoFaSpider         goflags.StringSlice
-	GoogleSpider       goflags.StringSlice
-	BingSpider         goflags.StringSlice
-	ChinazSpider       goflags.StringSlice
-	Ip138Spider        goflags.StringSlice
-	RapidDNSSpider     goflags.StringSlice
-	QianXunSpider      goflags.StringSlice
-	SiteDossierSpider  goflags.StringSlice
-	AnubisSpider       goflags.StringSlice
-	BaiduSpider        goflags.StringSlice
-	Github             goflags.StringSlice
-	YahooSpider        goflags.StringSlice
+	Query             goflags.StringSlice
+	Engine            goflags.StringSlice
+	ConfigFile        string
+	ProviderFile      string
+	OutputFile        string
+	OutputFields      string
+	JSON              bool
+	Raw               bool
+	Limit             int
+	Silent            bool
+	Verbose           bool
+	NoColor           bool
+	Timeout           int
+	RateLimit         int
+	RateLimitMinute   int
+	Retries           int
+	Shodan            goflags.StringSlice
+	ShodanIdb         goflags.StringSlice
+	Fofa              goflags.StringSlice
+	Censys            goflags.StringSlice
+	Quake             goflags.StringSlice
+	Netlas            goflags.StringSlice
+	Hunter            goflags.StringSlice
+	ZoomEye           goflags.StringSlice
+	CriminalIP        goflags.StringSlice
+	Publicwww         goflags.StringSlice
+	HunterHow         goflags.StringSlice
+	FullHunt          goflags.StringSlice
+	FoFaSpider        goflags.StringSlice
+	Binaryedge        goflags.StringSlice
+	Zone              goflags.StringSlice
+	GoogleSpider      goflags.StringSlice
+	BingSpider        goflags.StringSlice
+	ChinazSpider      goflags.StringSlice
+	Ip138Spider       goflags.StringSlice
+	RapidDNSSpider    goflags.StringSlice
+	QianXunSpider     goflags.StringSlice
+	SiteDossierSpider goflags.StringSlice
+	AnubisSpider      goflags.StringSlice
+	BaiduSpider       goflags.StringSlice
+	Github            goflags.StringSlice
+	YahooSpider       goflags.StringSlice
+
 	DisableUpdateCheck bool
 	Proxy              string
 	ProxyAuth          string
@@ -93,6 +96,8 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.Hunter, "hunter", "ht", nil, "search query for hunter (example: -hunter 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.ZoomEye, "zoomeye", "ze", nil, "search query for zoomeye (example: -zoomeye 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Netlas, "netlas", "ne", nil, "search query for netlas (example: -netlas 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Binaryedge, "binaryedge", "be", nil, "search query for binaryedge (example: -binaryedge 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.Zone, "zone", "zn", nil, "search query for 0zone (example: -zone 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.CriminalIP, "criminalip", "cl", nil, "search query for criminalip (example: -criminalip 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
@@ -175,6 +180,8 @@ func ParseOptions() *Options {
 		len(options.Quake),
 		len(options.Fofa),
 		len(options.ShodanIdb),
+		len(options.Binaryedge),
+		len(options.Zone),
 		len(options.Hunter),
 		len(options.ZoomEye),
 		len(options.Netlas),
@@ -251,6 +258,8 @@ func (options *Options) validateOptions() error {
 		len(options.Fofa),
 		len(options.ShodanIdb),
 		len(options.Hunter),
+		len(options.Binaryedge),
+		len(options.Zone),
 		len(options.ZoomEye),
 		len(options.Netlas),
 		len(options.CriminalIP),
@@ -289,6 +298,8 @@ func (options *Options) validateOptions() error {
 		len(options.Hunter),
 		len(options.ZoomEye),
 		len(options.Netlas),
+		len(options.Binaryedge),
+		len(options.Zone),
 		len(options.CriminalIP),
 		len(options.Publicwww),
 		len(options.HunterHow),
@@ -337,7 +348,9 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "criminalip", options.CriminalIP...)
 	appendQuery(options, "publicwww", options.Publicwww...)
 	appendQuery(options, "hunterhow", options.HunterHow...)
+	appendQuery(options, "binaryedge", options.Binaryedge...)
 	appendQuery(options, "github", options.Github...)
+	appendQuery(options, "zone", options.Zone...)
 	appendQuery(options, "fullhunt", options.FullHunt...)
 	appendQuery(options, "fofa-spider", options.FoFaSpider...)
 	appendQuery(options, "google-spider", options.GoogleSpider...)

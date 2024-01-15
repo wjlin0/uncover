@@ -1,4 +1,4 @@
-package binary
+package binaryedge
 
 type Response struct {
 	Page     int      `json:"page"`

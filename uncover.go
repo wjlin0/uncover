@@ -4,7 +4,7 @@ import (
 	"context"
 	anubis_spider "github.com/wjlin0/uncover/sources/agent/anubis-spider"
 	baidu_spider "github.com/wjlin0/uncover/sources/agent/baidu-spider"
-	"github.com/wjlin0/uncover/sources/agent/binary"
+	"github.com/wjlin0/uncover/sources/agent/binaryedge"
 	bing_spider "github.com/wjlin0/uncover/sources/agent/bing-spider"
 	chinaz_spider "github.com/wjlin0/uncover/sources/agent/chinaz-spider"
 	fofa_spider "github.com/wjlin0/uncover/sources/agent/fofa-spider"
@@ -93,8 +93,8 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &publicwww.Agent{})
 		case "hunterhow":
 			s.Agents = append(s.Agents, &hunterhow.Agent{})
-		case "binary":
-			s.Agents = append(s.Agents, &binary.Agent{})
+		case "binaryedge":
+			s.Agents = append(s.Agents, &binaryedge.Agent{})
 		case "github":
 			s.Agents = append(s.Agents, &github.Agent{})
 		case "fullhunt":
@@ -150,7 +150,7 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 	case len(s.Agents) == 0:
 		return nil, errorutil.NewWithTag("uncover", "no agent/source specified")
 	case !s.hasAnyAnonymousProvider() && !s.Provider.HasKeys():
-		return nil, errorutil.NewWithTag("uncover", "agents %v requires keys but no keys were found", s.Options.Agents)
+		return nil, errorutil.NewWithTag("uncover", "agents %v requires keys but no keys were found. please read docs %s on how to add keys", s.Options.Agents, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration")
 	}
 
 	megaChan := make(chan sources.Result, DefaultChannelBuffSize)
@@ -225,13 +225,13 @@ func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result 
 // AllAgents returns all supported uncover Agents
 func (s *Service) AllAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt",
 		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
 	}
 }
 func UncoverAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt",
 	}
 }
 func AnonymousAgents() []string {
@@ -264,7 +264,7 @@ func (s *Service) hasAnyAnonymousProvider() bool {
 }
 func AllAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binary",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt",
 		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
 	}
 }

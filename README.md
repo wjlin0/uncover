@@ -149,6 +149,9 @@ shodan:
 censys:
   - CENSYS_API_ID_1:CENSYS_API_SECRET_1
   - CENSYS_API_ID_2:CENSYS_API_SECRET_2
+github:
+  - GITHUB_TOKEN_1
+  - GITHUB_TOKEN_2
 fofa:
   - FOFA_EMAIL_1:FOFA_KEY_1
   - FOFA_EMAIL_2:FOFA_KEY_2
@@ -173,6 +176,12 @@ publicwww:
 hunterhow:
   - HUNTERHOW_API_KEY_1 
   - HUNTERHOW_API_KEY_2
+fullhunt:
+  - FULLHUNT_API_KEY_1
+  - FULLHUNT_API_KEY_2
+binaryedge:
+  - BINARYEDGE_API_KEY_1
+  - BINARYEDGE_API_KEY_2
 ```
 
 When multiple keys/credentials are specified for same provider in the config file, random key will be used for each execution.
@@ -181,17 +190,20 @@ alternatively you can also set the API key as environment variable in your bash 
 
 ```yaml
 export SHODAN_API_KEY=xxx
+export ZOOMEYE_API_KET=xxx
+export GITHUB_TOKEN=xxx
+export QUAKE_TOKEN=xxx
+export BINARYEDGE_API_KEY=xxx
+export HUNTER_API_KEY=xxx
+export ZOOE_API_KEY=xxx
+export NETLAS_API_KEY=xxx
 export CENSYS_API_ID=xxx
 export CENSYS_API_SECRET=xxx
 export FOFA_EMAIL=xxx
 export FOFA_KEY=xxx
-export QUAKE_TOKEN=xxx
-export HUNTER_API_KEY=xxx
-export ZOOMEYE_API_KEY=xxx
-export NETLAS_API_KEY=xxx
-export CRIMINALIP_API_KEY=xxx
-export PUBLICWWW_API_KEY=xxx
+export FULLHUNT_API_KEY=xxx
 export HUNTERHOW_API_KEY=xxx
+export CRIMINALIP_API_KEY=xxx
 ```
 
 Required API keys can be obtained by signing up on following platform [Shodan](https://account.shodan.io/register), [Censys](https://censys.io/register), [Fofa](https://fofa.info/toLogin), [Quake](https://quake.360.net/quake/#/index), [Hunter](https://user.skyeye.qianxin.com/user/register?next=https%3A//hunter.qianxin.com/api/uLogin&fromLogin=1), [ZoomEye](https://www.zoomeye.org/login), [Netlas](https://app.netlas.io/registration/), [CriminalIP](https://www.criminalip.io/register), [Publicwww](https://publicwww.com/profile/signup.html) and [binary](https://app.binaryedge.io/login)

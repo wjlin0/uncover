@@ -13,7 +13,7 @@ type Keys struct {
 	CriminalIPToken string
 	PublicwwwToken  string
 	HunterHowToken  string
-	BinaryToken     string
+	BinaryedgeToken string
 	GithubToken     string
 	FullHuntToken   string
 }
@@ -31,7 +31,7 @@ func (keys Keys) Empty() bool {
 		keys.CriminalIPToken == "" &&
 		keys.PublicwwwToken == "" &&
 		keys.HunterHowToken == "" &&
-		keys.BinaryToken == "" &&
+		keys.BinaryedgeToken == "" &&
 		keys.GithubToken == "" &&
 		keys.FullHuntToken == ""
 }

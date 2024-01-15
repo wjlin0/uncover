@@ -1,4 +1,4 @@
-package binary
+package binaryedge
 
 type BinaryRequest struct {
 	Query    string

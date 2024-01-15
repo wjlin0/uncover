@@ -1,4 +1,4 @@
-package binary
+package binaryedge
 
 import (
 	"encoding/json"
@@ -23,11 +23,11 @@ const (
 )
 
 func (agent *Agent) Name() string {
-	return "binary"
+	return "binaryedge"
 }
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
-	if session.Keys.BinaryToken == "" {
-		return nil, errors.New("empty binary keys")
+	if session.Keys.BinaryedgeToken == "" {
+		return nil, errors.New("empty binaryedge keys")
 	}
 	results := make(chan sources.Result)
 	start := time.Now()
@@ -110,7 +110,7 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, binaryRequest
 		return nil, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-Key", session.Keys.BinaryToken)
+	request.Header.Set("X-Key", session.Keys.BinaryedgeToken)
 	resp, err := session.Do(request, agent.Name())
 	if err != nil {
 		return nil, err

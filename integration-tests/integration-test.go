@@ -20,19 +20,35 @@ var (
 
 	tests = map[string]testutils.TestCase{
 		// source tests
-		"fofa-spider": fofaSpiderTestcases{},
-
-		//"censys":  censysTestcases{},
-		//"shodan":  shodanTestcases{},
-		//"zoomeye": zoomeyeTestcases{},
-		//"fofa":    fofaTestcases{},
-		//"hunter":  hunterTestcases{},
+		//"zoomeye":    zoomeyeTestcases{},
+		//"fofa":       fofaTestcases{},
+		//"hunter":     hunterTestcases{},
 		//"quake":      quakeTestcases{},
+		//"binaryedge": binaryTestcases{},
+		//"github":     githubTestcases{},
+		//"publicwww":  publicwwwTestcases{},
 		//"netlas":     netlasTestcases{},
+		//"censys":     censysTestcases{},
+		//"shodan":     shodanTestcases{},
 		//"criminalip": criminalipTestcases{},
 		//"hunterhow":  hunterhowTestcases{},
+		//"fullhunt":   fullhuntTestcases{},
+
+		//spider tests
+		//"shodan-idb":         shodanidbTestcases{},
+		//"fofa-spider":        fofaSpiderTestcases{},
+		//"chinaz-spider":      chinazSpiderTestcases{},
+		//"google-spider":      googleSpiderTestcases{},
+		//"ip138-spider":       ip138SpiderTestcases{},
+		//"anubis-spider":      anubisSpiderTestcases{},
+		"sitedossier-spider": sitedossierSpiderTestcases{},
+		//"bing-spider":        bingSpiderTestcases{},
+		//"qianxun-spider":     qianxunSpiderTestcases{},
+		//"rapiddns-spider":    rapiddnsSpiderTestcases{},
+		//"baidu-spider":       baiduSpiderTestcases{},
+		//"yahoo-spider":       yahooSpiderTestcases{},
 		// feature tests
-		"output": outputTestcases{},
+		//"output": outputTestcases{},
 	}
 )
 

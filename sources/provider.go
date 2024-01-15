@@ -32,7 +32,7 @@ type Provider struct {
 	CriminalIP []string `yaml:"criminalip"`
 	Publicwww  []string `yaml:"publicwww"`
 	HunterHow  []string `yaml:"hunterhow"`
-	Binary     []string `yaml:"binary"`
+	Binaryedge []string `yaml:"binaryedge"`
 	Github     []string `yaml:"github"`
 	FullHunt   []string `json:"fullhunt"`
 }
@@ -102,8 +102,8 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.HunterHow) > 0 {
 		keys.HunterHowToken = provider.HunterHow[rand.Intn(len(provider.HunterHow))]
 	}
-	if len(provider.Binary) > 0 {
-		keys.BinaryToken = provider.Binary[rand.Intn(len(provider.Binary))]
+	if len(provider.Binaryedge) > 0 {
+		keys.BinaryedgeToken = provider.Binaryedge[rand.Intn(len(provider.Binaryedge))]
 	}
 	if len(provider.Github) > 0 {
 		keys.GithubToken = provider.Github[rand.Intn(len(provider.Github))]
@@ -138,7 +138,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	provider.CriminalIP = appendIfExists(provider.CriminalIP, "CRIMINALIP_API_KEY")
 	provider.Publicwww = appendIfExists(provider.Publicwww, "PUBLICWWW_API_KEY")
 	provider.HunterHow = appendIfExists(provider.HunterHow, "HUNTERHOW_API_KEY")
-	provider.Binary = appendIfExists(provider.Binary, "BINARY_API_KEY")
+	provider.Binaryedge = appendIfExists(provider.Binaryedge, "BINARYEDGE_API_KEY")
 	provider.Github = appendIfExists(provider.Github, "GITHUB_TOKEN")
 	provider.FullHunt = appendIfExists(provider.FullHunt, "FULLHUNT_API_KEY")
 	appendIfAllExists := func(arr []string, env1 string, env2 string) []string {
@@ -167,7 +167,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.Netlas) > 0,
 		len(provider.CriminalIP) > 0,
 		len(provider.HunterHow) > 0,
-		len(provider.Binary) > 0,
+		len(provider.Binaryedge) > 0,
 		len(provider.Github) > 0,
 		len(provider.FullHunt) > 0,
 	)

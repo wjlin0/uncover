@@ -98,10 +98,12 @@ func (agent *Agent) query(URL string, session *sources.Session, quakeRequest *Re
 	for _, quakeResult := range quakeResponse.Data {
 		result := sources.Result{Source: agent.Name()}
 		result.IP = quakeResult.IP
-		result.Port = quakeResult.Port
+		if result.Port = quakeResult.Port; result.Port == 0 {
+			result.Port = 80
+		}
 		host := quakeResult.Hostname
 		if host == "" {
-			host = quakeResult.Domain
+			host = fmt.Sprintf("%s:%d", result.IP, result.Port)
 		}
 		result.Host = host
 		raw, _ := json.Marshal(result)

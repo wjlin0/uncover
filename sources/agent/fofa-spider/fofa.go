@@ -83,6 +83,9 @@ func (agent *Agent) queryStatsList(STATS string, session *sources.Session, query
 	}
 	request.Header.Set("Referer", "https://fofa.info/")
 	resp, err := session.Do(request, Source)
+	if err != nil {
+		return nil, err
+	}
 	if err := json.NewDecoder(resp.Body).Decode(fofaResponse); err != nil {
 		return nil, err
 	}

@@ -37,6 +37,7 @@ func NewCSVWriter(path string) (*CSVWriter, error) {
 		// 移动光标
 		_, _ = file.Seek(stat.Size(), io.SeekStart)
 	}
+	c.files = file
 
 	return c, nil
 }

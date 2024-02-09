@@ -67,6 +67,14 @@ func (o *OutputWriter) WriteJsonData(data sources.Result) {
 	o.Write([]byte(data.JSON()))
 }
 
+func (o *OutputWriter) WriteCSVData(data sources.Result) {
+	if o.findDuplicate(fmt.Sprintf("%s:%d", data.IP, data.Port)) {
+		return
+	}
+	o.Write([]byte(data.CSV()))
+
+}
+
 // Close closes the output writers
 func (o *OutputWriter) Close() {
 	// Iterate over the writers and close the file writers

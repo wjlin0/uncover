@@ -1,9 +1,14 @@
 package sources
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"net"
+	"reflect"
+	"strings"
 )
 
 type Result struct {
@@ -32,4 +37,40 @@ func (result *Result) RawData() string {
 func (result *Result) JSON() string {
 	data, _ := json.Marshal(result)
 	return string(data)
+}
+func (result *Result) CSV() string {
+	buffer := bytes.Buffer{}
+	encoder := csv.NewWriter(&buffer)
+	var fields []string
+	vl := reflect.ValueOf(*result)
+	ty := vl.Type()
+	for i := 0; i < vl.NumField(); i++ {
+		if ty.Field(i).Tag.Get("csv") != "-" {
+			fields = append(fields, fmt.Sprint(vl.Field(i).Interface()))
+		}
+
+	}
+	if err := encoder.Write(fields); err != nil {
+		return ""
+	}
+	encoder.Flush()
+	return strings.TrimSpace(buffer.String())
+}
+
+func (result *Result) CSVHeader() (string, error) {
+	buffer := bytes.Buffer{}
+	writer := csv.NewWriter(&buffer)
+	ty := reflect.TypeOf(*result)
+	var headers []string
+	for i := 0; i < ty.NumField(); i++ {
+		if ty.Field(i).Tag.Get("csv") != "-" {
+			headers = append(headers, ty.Field(i).Tag.Get("csv"))
+		}
+	}
+
+	if err := writer.Write(headers); err != nil {
+		return "", errors.Wrap(err, "Could not write headers")
+	}
+	writer.Flush()
+	return strings.TrimSpace(buffer.String()), nil
 }

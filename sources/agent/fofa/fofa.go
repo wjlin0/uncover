@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/projectdiscovery/gologger"
-	"github.com/wjlin0/pathScan/pkg/util"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"strconv"
 	"time"

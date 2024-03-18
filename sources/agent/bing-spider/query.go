@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/wjlin0/pathScan/pkg/util"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	stringsutls "github.com/wjlin0/uncover/utils/strings"
 	"io"
 	"net/http"
@@ -23,9 +23,10 @@ type query struct {
 	cookies    []*http.Cookie
 	result     chan sources.Result
 	query      *sources.Query
+	isCn       bool
 }
 
-func newQuery(session *sources.Session, cookies []*http.Cookie, agent *Agent, query2 *sources.Query, result chan sources.Result) *query {
+func newQuery(session *sources.Session, cookies []*http.Cookie, agent *Agent, query2 *sources.Query, result chan sources.Result, isCN bool) *query {
 	return &query{
 		Domain:     query2.Query,
 		Subdomains: map[string]struct{}{},
@@ -35,6 +36,7 @@ func newQuery(session *sources.Session, cookies []*http.Cookie, agent *Agent, qu
 		result:     result,
 		cookies:    cookies,
 		query:      query2,
+		isCn:       isCN,
 	}
 
 }
@@ -47,7 +49,11 @@ func (q *query) search(domain string, filteredSubdomain string) {
 			Q:     bingQuery,
 			First: q.PageNum,
 		}
-		resp, err := q.agent.queryURL(q.session, URL, q.cookies, bing)
+		var U = URL
+		if q.isCn {
+			U = URLCN
+		}
+		resp, err := q.agent.queryURL(q.session, U, q.cookies, bing)
 		if err != nil {
 			break
 		}

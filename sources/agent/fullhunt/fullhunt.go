@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/projectdiscovery/gologger"
-	"github.com/wjlin0/pathScan/pkg/util"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"time"
 )

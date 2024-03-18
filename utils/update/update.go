@@ -6,7 +6,7 @@ import (
 	"github.com/logrusorgru/aurora"
 	"github.com/tj/go-update"
 	githubUpdateStore "github.com/tj/go-update/stores/github"
-	"github.com/wjlin0/pathScan/pkg/util"
+	util "github.com/wjlin0/uncover/utils"
 	"strings"
 )
 

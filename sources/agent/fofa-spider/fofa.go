@@ -8,8 +8,9 @@ import (
 	"github.com/antchfx/htmlquery"
 	"github.com/pkg/errors"
 	"github.com/projectdiscovery/gologger"
-	"github.com/wjlin0/pathScan/pkg/util"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -86,8 +87,23 @@ func (agent *Agent) queryStatsList(STATS string, session *sources.Session, query
 	if err != nil {
 		return nil, err
 	}
-	if err := json.NewDecoder(resp.Body).Decode(fofaResponse); err != nil {
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return nil, err
+	}
+	if err := json.NewDecoder(bytes.NewBuffer(body)).Decode(fofaResponse); err != nil {
+		var mapData map[string]interface{}
+		if err := json.NewDecoder(bytes.NewBuffer(body)).Decode(&mapData); err != nil {
+			return nil, err
+		}
+		if temp, ok := mapData["message"].(string); !ok {
+			return nil, err
+		} else {
+			if temp != "" {
+				return nil, errors.New(temp)
+			}
+		}
 	}
 	if fofaResponse.Code == -9 {
 		return nil, errors.New(fofaResponse.Message)

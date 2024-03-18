@@ -6,11 +6,13 @@ import (
 	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"net/http"
+	"strings"
 	"time"
 )
 
 const (
 	URL     = "https://www.bing.com/search?q=%s&first=%d"
+	URLCN   = "https://cn.bing.com/search?q=%s&first=%d"
 	URLInit = "https://www.bing.com/"
 	Source  = "bing-spider"
 	Limit   = 100
@@ -42,12 +44,12 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 		defer func() {
 			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
 		}()
-		cookies, err := agent.queryCookies(session)
+		cookies, isCN, err := agent.queryCookies(session)
 		if err != nil {
 			results <- sources.Result{Source: agent.Name(), Error: err}
 			return
 		}
-		numberOfResults = len(newQuery(session, cookies, agent, query, results).run())
+		numberOfResults = len(newQuery(session, cookies, agent, query, results, isCN).run())
 	}()
 
 	return results, nil
@@ -70,16 +72,21 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, cookies []*ht
 	return session.Do(request, agent.Name())
 }
 
-func (agent *Agent) queryCookies(session *sources.Session) ([]*http.Cookie, error) {
+func (agent *Agent) queryCookies(session *sources.Session) ([]*http.Cookie, bool, error) {
+	var isCN bool
 	request, err := sources.NewHTTPRequest(http.MethodGet, URLInit, nil)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	request.Header.Set("User-Agent", uarand.GetRandom())
 	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	resp, err := session.Do(request, agent.Name())
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
-	return resp.Cookies(), nil
+	if resp.StatusCode == 302 && strings.Contains(resp.Header.Get("Location"), "cn.bing.com") {
+		isCN = true
+	}
+
+	return resp.Cookies(), isCN, nil
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/projectdiscovery/gologger"
 	errorutil "github.com/projectdiscovery/utils/errors"
-	"github.com/wjlin0/pathScan/pkg/util"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"strconv"
 	"time"

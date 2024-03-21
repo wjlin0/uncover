@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/remeh/sizedwaitgroup"
 	"github.com/wjlin0/uncover/sources"
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -47,10 +46,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 			results <- sources.Result{Source: agent.Name(), Error: errors.Wrap(err, "get fofa-spider error")}
 			return
 		}
-		wg := sizedwaitgroup.New(5)
-		lock := sync.Mutex{}
 		for _, c := range list.Country {
-
 			// 省级行政单位
 			for _, s := range c.Subdivisions {
 				decodedString, err := strconv.Unquote(`"` + s.Name + `"`)
@@ -64,25 +60,26 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 						continue
 					}
 					cc.Name = decodedString
-					wg.Add()
-					go func(country_, subdivisions_, city_ string) {
-						defer wg.Done()
-						q := fmt.Sprintf("%s%%20+subdivisions:\"%s\"%%20+city:\"%s\"", query.Query, subdivisions_, city_)
-						// url 编码 q
-						q = url.QueryEscape(q)
+					subdivisions_ := s.Name
+					city_ := cc.Name
 
-						spiderResult := agent.query(session, q, URL, query.Limit, results, &numberOfResults)
-						lock.Lock()
-						numberOfResults += len(spiderResult)
-						lock.Unlock()
-						if numberOfResults > query.Limit {
-							return
-						}
-					}(c.Name, s.Name, cc.Name)
+					q := fmt.Sprintf("%s%%20+subdivisions:\"%s\"%%20+city:\"%s\"", query.Query, subdivisions_, city_)
+					// url 编码 q
+					q = url.QueryEscape(q)
+
+					spiderResult, err := agent.query(session, q, URL, query.Limit, results, &numberOfResults)
+					if err != nil {
+						results <- sources.Result{Source: agent.Name(), Error: errors.Wrap(err, "get zoomeye-spider error")}
+						return
+					}
+					numberOfResults += len(spiderResult)
+					if numberOfResults > query.Limit {
+						return
+					}
+
 				}
 			}
 		}
-		wg.Wait()
 	}()
 	return results, nil
 
@@ -124,10 +121,51 @@ func (agent *Agent) queryAggsList(URL string, session *sources.Session, query *s
 	if aggsRes.Status != 200 {
 		return nil, fmt.Errorf("zoomeye aggs status code: %d", aggsRes.Status)
 	}
-	return aggsRes, nil
+	for _, co := range aggsRes.Country {
+		for _, _sub := range co.Subdivisions {
+			sort.Slice(_sub.City, func(i, j int) bool {
+				return _sub.City[i].Count < _sub.City[j].Count
+			})
+		}
+		sort.Slice(co.Subdivisions, func(i, j int) bool {
+			return co.Subdivisions[i].Count < co.Subdivisions[j].Count
+		})
+	}
+	var temp = &aggsResponse{
+		Status: aggsRes.Status,
+	}
+	for _co, co := range aggsRes.Country {
+		if _co > 4 {
+			continue
+		}
+		tempCountry := &country{
+			Name:   co.Name,
+			Count:  co.Count,
+			Label:  co.Label,
+			NameZh: co.NameZh,
+		}
+		for i, sub := range co.Subdivisions {
+			if i > 4 {
+				continue
+			}
+			tempSub := subdivisions{
+				Name:  sub.Name,
+				Count: sub.Count,
+			}
+			if len(sub.City) > 4 {
+				tempSub.City = sub.City[:4]
+			} else {
+				tempSub.City = sub.City
+			}
+			tempCountry.Subdivisions = append(tempCountry.Subdivisions, tempSub)
+		}
+
+		temp.Country = append(temp.Country, tempCountry)
+	}
+	return temp, nil
 }
 
-func (agent *Agent) query(session *sources.Session, q string, url string, limit int, results chan sources.Result, num *int) []sources.Result {
+func (agent *Agent) query(session *sources.Session, q string, url string, limit int, results chan sources.Result, num *int) ([]sources.Result, error) {
 	var (
 		spiderResult []sources.Result
 	)
@@ -155,11 +193,12 @@ func (agent *Agent) query(session *sources.Session, q string, url string, limit 
 		if err = json.NewDecoder(body).Decode(responseJson); err != nil {
 			continue
 		}
-
+		if responseJson.Status == 429 {
+			return spiderResult, fmt.Errorf("zoomeye api rate limit")
+		}
 		if responseJson.Status != 200 {
 			break
 		}
-
 		if page*40 > limit || len(spiderResult) > limit || len(responseJson.Matches) == 0 {
 			break
 		}
@@ -220,6 +259,6 @@ func (agent *Agent) query(session *sources.Session, q string, url string, limit 
 		page++
 	}
 
-	return spiderResult
+	return spiderResult, nil
 
 }

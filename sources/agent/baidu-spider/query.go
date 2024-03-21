@@ -140,7 +140,6 @@ func (q *query) matchLocation(url string) []string {
 	if err != nil {
 		return nil
 	}
-	//start := time.Now()
 	resp, err := q.session.Do(request, q.agent.Name())
 	if err != nil {
 		return nil

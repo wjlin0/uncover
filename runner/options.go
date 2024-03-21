@@ -6,6 +6,7 @@ import (
 	"github.com/wjlin0/uncover/utils/update"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"errors"
 
@@ -69,6 +70,7 @@ type Options struct {
 	BaiduSpider       goflags.StringSlice
 	Github            goflags.StringSlice
 	YahooSpider       goflags.StringSlice
+	ZoomEyeSpider     goflags.StringSlice
 
 	DisableUpdateCheck bool
 	Proxy              string
@@ -114,6 +116,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.AnubisSpider, "anubis-spider", "as", nil, "search query for anubis-spider (example: -anubis-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.BaiduSpider, "baidu-spider", "bus", nil, "search query for baidu-spider (example: -baidu-spider 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.YahooSpider, "yahoo-spider", "ys", nil, "search query for yahoo-spider (example: -yahoo-spider 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.ZoomEyeSpider, "zoomeye-spider", "zes", nil, "search query for zoomeye-spider (example: -zoomeye-spider 'query.txt')", goflags.FileStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
@@ -144,6 +147,7 @@ func ParseOptions() *Options {
 	flagSet.CreateGroup("debug", "Debug",
 		flagSet.BoolVar(&options.Silent, "silent", false, "show only results in output"),
 		flagSet.CallbackVar(versionCallback, "version", "show version of the project"),
+		flagSet.CallbackVarP(destructAgentCallback, "destruct-agent", "da", "show destruct agent"),
 		flagSet.BoolVar(&options.Verbose, "v", false, "show verbose output"),
 	)
 
@@ -201,6 +205,7 @@ func ParseOptions() *Options {
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
 		len(options.YahooSpider),
+		len(options.ZoomEyeSpider),
 	) {
 		options.Engine = append(options.Engine, "fofa")
 	}
@@ -278,6 +283,7 @@ func (options *Options) validateOptions() error {
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
 		len(options.YahooSpider),
+		len(options.ZoomEyeSpider),
 	) {
 		return errors.New("no query provided")
 	}
@@ -316,6 +322,7 @@ func (options *Options) validateOptions() error {
 		len(options.AnubisSpider),
 		len(options.BaiduSpider),
 		len(options.YahooSpider),
+		len(options.ZoomEyeSpider),
 	) {
 		return errors.New("no engine specified")
 	}
@@ -326,6 +333,10 @@ func (options *Options) validateOptions() error {
 func versionCallback() {
 	gologger.Info().Msgf("Current Version: %s\n", version)
 	gologger.Info().Msgf("Uncover ConfigDir: %s\n", folderutil.AppConfigDirOrDefault(".uncover-config", "uncover"))
+	os.Exit(0)
+}
+func destructAgentCallback() {
+	gologger.Info().Msgf("destruct agents: %s\n", strings.Join(uncover.DestructAgents(), ","))
 	os.Exit(0)
 }
 
@@ -363,4 +374,5 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "anubis-spider", options.AnubisSpider...)
 	appendQuery(options, "baidu-spider", options.BaiduSpider...)
 	appendQuery(options, "yahoo-spider", options.YahooSpider...)
+	appendQuery(options, "zoomeye-spider", options.ZoomEyeSpider...)
 }

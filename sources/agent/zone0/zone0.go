@@ -3,15 +3,12 @@ package zone0
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"strconv"
-	"time"
-
-	"errors"
 
 	"github.com/wjlin0/uncover/sources"
 )
@@ -41,7 +38,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 	if session.Keys.Zone0Token == "" {
 		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
-	start := time.Now()
+
 	results := make(chan sources.Result)
 
 	go func() {
@@ -49,9 +46,6 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 
 		var numberOfResults int
 
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
 		page := 1
 		for {
 			zone0Request := &request{

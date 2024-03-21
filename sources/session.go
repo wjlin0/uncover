@@ -43,6 +43,7 @@ var DefaultRateLimits = map[string]*ratelimit.Options{
 	"baidu-spider":       {Key: "baidu-spider", MaxCount: 5, Duration: time.Second},
 	"sitedossier-spider": {Key: "sitedossier-spider", MaxCount: 2, Duration: time.Second},
 	"yahoo-spider":       {Key: "yahoo-spider", MaxCount: 3, Duration: time.Second},
+	"zoomeye-spider":     {Key: "zoomeye-spider", MaxCount: 2, Duration: time.Second},
 }
 
 // Session handles session agent sessions

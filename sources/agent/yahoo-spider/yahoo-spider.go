@@ -2,10 +2,8 @@ package yahoo_spider
 
 import (
 	"fmt"
-	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"net/http"
-	"time"
 )
 
 const (
@@ -31,22 +29,16 @@ func (agent *Agent) Name() string {
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	results := make(chan sources.Result)
-	start := time.Now()
 
 	go func() {
 		defer close(results)
-		var (
-			numberOfResults int
-		)
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		cookies, err := agent.queryCookies(session)
 		if err != nil {
 			results <- sources.Result{Source: agent.Name(), Error: err}
 			return
 		}
-		numberOfResults = len(newQuery(session, cookies, agent, query, results).run())
+		newQuery(session, cookies, agent, query, results).run()
 	}()
 
 	return results, nil

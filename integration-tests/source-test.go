@@ -418,3 +418,13 @@ func (h outputTestcases) Execute() error {
 	}
 	return expectResultsGreaterThanCount(results, 0)
 }
+
+type zoomeyeSpiderTestcases struct{}
+
+func (z zoomeyeSpiderTestcases) Execute() error {
+	results, err := testutils.RunUncoverAndGetResults(debug, "-zoomeye-spider", "baidu.com")
+	if err != nil {
+		return err
+	}
+	return expectResultsGreaterThanCount(results, 0)
+}

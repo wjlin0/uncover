@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"io"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const (
@@ -33,7 +31,7 @@ func (agent *Agent) Name() string {
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 
 	results := make(chan sources.Result)
-	start := time.Now()
+
 	go func() {
 		defer close(results)
 		var (
@@ -41,9 +39,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 			numberOfResults int
 			page            int
 		)
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		Results = make(map[string]struct{})
 		page = 1
 		for {
@@ -95,7 +91,7 @@ func (agent *Agent) query(session *sources.Session, domain string, URL string, D
 		if _, ok := Results[qianxun]; ok {
 			continue
 		}
-		result := sources.Result{Source: agent.Name()}
+		result := sources.Result{Source: Source}
 		result.Host = qianxun
 		raw, _ := json.Marshal(result)
 		result.Raw = raw

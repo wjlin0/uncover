@@ -2,6 +2,7 @@ package uncover
 
 import (
 	"context"
+	sliceutil "github.com/projectdiscovery/utils/slice"
 	anubis_spider "github.com/wjlin0/uncover/sources/agent/anubis-spider"
 	baidu_spider "github.com/wjlin0/uncover/sources/agent/baidu-spider"
 	"github.com/wjlin0/uncover/sources/agent/binaryedge"
@@ -17,6 +18,8 @@ import (
 	"github.com/wjlin0/uncover/sources/agent/sitedossier-spider"
 	yahoo_spider "github.com/wjlin0/uncover/sources/agent/yahoo-spider"
 	"github.com/wjlin0/uncover/sources/agent/zone0"
+	zoomeye_spider "github.com/wjlin0/uncover/sources/agent/zoomeye-spider"
+	"github.com/wjlin0/uncover/utils/strings"
 	"sync"
 	"time"
 
@@ -124,6 +127,8 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &baidu_spider.Agent{})
 		case "yahoo-spider":
 			s.Agents = append(s.Agents, &yahoo_spider.Agent{})
+		case "zoomeye-spider":
+			s.Agents = append(s.Agents, &zoomeye_spider.Agent{})
 		}
 	}
 	s.Provider = sources.NewProvider(opts.ProviderConfigLocation)
@@ -145,6 +150,7 @@ func New(opts *Options) (*Service, error) {
 }
 
 func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
+
 	// unlikely but as a precaution to handle random panics check all types
 	if err := s.nilCheck(); err != nil {
 		return nil, err
@@ -154,6 +160,8 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 		return nil, errorutil.NewWithTag("uncover", "no agent/source specified")
 	case !s.hasAnyAnonymousProvider() && !s.Provider.HasKeys():
 		return nil, errorutil.NewWithTag("uncover", "agents %v requires keys but no keys were found. please read docs %s on how to add keys", s.Options.Agents, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration")
+	case s.hasOnlyDestructAgent():
+		return nil, errorutil.NewWithTag("uncover", "destructive agents %v cannot be used with uncover. please use command show to see destruct agents (-da)", s.Options.Agents)
 	}
 
 	megaChan := make(chan sources.Result, DefaultChannelBuffSize)
@@ -162,6 +170,10 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 	for _, q := range s.Options.Queries {
 	agentLabel:
 		for _, agent := range s.Agents {
+			if strings.Contains(DestructAgents(), agent.Name()) {
+				gologger.Warning().Msgf("destructive agent %s cannot be used with uncover", agent.Name())
+				continue agentLabel
+			}
 			keys := s.Provider.GetKeys()
 			if keys.Empty() && !(stringsutil.EqualFoldAny(agent.Name(), AnonymousAgents()...)) {
 				gologger.Error().Msgf(agent.Name(), "agent given but keys not found")
@@ -229,7 +241,12 @@ func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result 
 func (s *Service) AllAgents() []string {
 	return []string{
 		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0",
-		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider", "zoomeye-spider",
+	}
+}
+func DestructAgents() []string {
+	return []string{
+		"qianxun-spider",
 	}
 }
 func UncoverAgents() []string {
@@ -239,7 +256,7 @@ func UncoverAgents() []string {
 }
 func AnonymousAgents() []string {
 	return []string{
-		"shodan-idb", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "anubis-spider", "baidu-spider", "yahoo-spider",
+		"shodan-idb", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "anubis-spider", "baidu-spider", "yahoo-spider", "zoomeye-spider",
 	}
 }
 func (s *Service) nilCheck() error {
@@ -268,6 +285,9 @@ func (s *Service) hasAnyAnonymousProvider() bool {
 func AllAgents() []string {
 	return []string{
 		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0",
-		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider",
+		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider", "zoomeye-spider",
 	}
+}
+func (s *Service) hasOnlyDestructAgent() bool {
+	return sliceutil.ContainsItems(DestructAgents(), s.Options.Agents)
 }

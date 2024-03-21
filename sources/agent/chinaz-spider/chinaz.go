@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"io"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const (
@@ -31,12 +29,11 @@ func (agent *Agent) Name() string {
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 
 	results := make(chan sources.Result)
-	start := time.Now()
+
 	go func() {
 		defer close(results)
 		chinaz := &chinazRequest{Domain: query.Query}
-		sub := agent.query(URL, session, chinaz, results)
-		gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), len(sub))
+		agent.query(URL, session, chinaz, results)
 	}()
 
 	return results, nil

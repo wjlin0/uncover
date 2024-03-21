@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/antchfx/htmlquery"
 	"github.com/pkg/errors"
-	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	util "github.com/wjlin0/uncover/utils"
 	"io"
@@ -29,14 +28,11 @@ func (agent *Agent) Name() string {
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 
 	results := make(chan sources.Result)
-	start := time.Now()
 	go func() {
 		defer close(results)
 
 		var numberOfResults int
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		list, err := agent.queryStatsList(stats, session, query)
 		if err != nil {
 			results <- sources.Result{Source: agent.Name(), Error: errors.Wrap(err, "get fofa-spider error")}
@@ -168,7 +164,7 @@ func parseResult(body bytes.Buffer) (results []sources.Result) {
 		return nil
 	}
 	for _, n := range notes {
-		r := sources.Result{}
+		r := sources.Result{Source: Source}
 		if portNote := htmlquery.FindOne(n, "//div[@class=\"hsxa-clearfix hsxa-meta-data-list-lv1\"]/div[@class=\"hsxa-fr\"]/a[@class=\"hsxa-port\"]/text()"); portNote != nil {
 			r.Port, _ = strconv.Atoi(strings.TrimSpace(htmlquery.InnerText(portNote)))
 		}

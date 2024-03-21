@@ -2,13 +2,10 @@ package shodanidb
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
 	"net/http"
 	"net/url"
-	"time"
-
-	"errors"
 
 	"github.com/projectdiscovery/mapcidr"
 	iputil "github.com/projectdiscovery/utils/ip"
@@ -27,7 +24,7 @@ func (agent *Agent) Name() string {
 
 func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan sources.Result, error) {
 	results := make(chan sources.Result)
-	start := time.Now()
+
 	if !iputil.IsIP(query.Query) && !iputil.IsCIDR(query.Query) {
 		return nil, errors.New("only ip/cidr are accepted")
 	}
@@ -36,8 +33,7 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 		defer close(results)
 
 		shodanRequest := &ShodanRequest{Query: query.Query}
-		sub := agent.query(URL, session, shodanRequest, results)
-		gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), len(sub))
+		agent.query(URL, session, shodanRequest, results)
 	}()
 
 	return results, nil

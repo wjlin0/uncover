@@ -47,9 +47,9 @@ func NewRunner(options *Options) (*Runner, error) {
 		return nil, err
 	}
 
-	if !options.Verbose {
-		runner.outputWriter.AddWriters(os.Stdout)
-	}
+	//if !options.Verbose {
+	//	runner.outputWriter.AddWriters(os.Stdout)
+	//}
 	if runner.options.OutputFile != "" {
 		outputFile, err := os.Create(runner.options.OutputFile)
 		if err != nil {
@@ -63,6 +63,9 @@ func NewRunner(options *Options) (*Runner, error) {
 // Run RunEnumeration runs the subdomain enumeration flow on the targets specified
 func (r *Runner) Run(ctx context.Context) error {
 	resultCallback := func(result sources.Result) {
+		if result.Source == "" {
+			result.Source = "unknown"
+		}
 		optionFields := r.options.OutputFields
 		switch {
 		case result.Error != nil:

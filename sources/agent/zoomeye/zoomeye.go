@@ -2,14 +2,11 @@ package zoomeye
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
-
-	"errors"
 
 	"github.com/wjlin0/uncover/sources"
 )
@@ -29,15 +26,13 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 		return nil, errors.New(fmt.Sprintf("empty zoomeye keys please read docs %s on how to add keys ", "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
 	results := make(chan sources.Result)
-	start := time.Now()
+
 	go func() {
 		defer close(results)
 
 		currentPage := 1
 		var numberOfResults, totalResults int
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		for {
 			zoomeyeRequest := &ZoomEyeRequest{
 				Query: query.Query,

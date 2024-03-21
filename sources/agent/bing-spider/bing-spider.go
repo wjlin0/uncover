@@ -3,11 +3,9 @@ package bing_spider
 import (
 	"fmt"
 	"github.com/corpix/uarand"
-	"github.com/projectdiscovery/gologger"
 	"github.com/wjlin0/uncover/sources"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const (
@@ -35,21 +33,15 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 
 	results := make(chan sources.Result)
 
-	start := time.Now()
 	go func() {
 		defer close(results)
-		var (
-			numberOfResults int
-		)
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		cookies, isCN, err := agent.queryCookies(session)
 		if err != nil {
 			results <- sources.Result{Source: agent.Name(), Error: err}
 			return
 		}
-		numberOfResults = len(newQuery(session, cookies, agent, query, results, isCN).run())
+		newQuery(session, cookies, agent, query, results, isCN).run()
 	}()
 
 	return results, nil
@@ -65,7 +57,7 @@ func (agent *Agent) queryURL(session *sources.Session, URL string, cookies []*ht
 	request.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
 	request.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	// 使用随机生成的User-Agent
-	request.Header.Set("User-Agent", uarand.GetRandom())
+	request.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36ZaloTheme/light ZaloLanguage/en")
 	for _, cookie := range cookies {
 		request.AddCookie(cookie)
 	}

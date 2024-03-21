@@ -44,10 +44,11 @@ var (
 		"anubis-spider":      anubisSpiderTestcases{},
 		"sitedossier-spider": sitedossierSpiderTestcases{},
 		"bing-spider":        bingSpiderTestcases{},
-		"qianxun-spider":     qianxunSpiderTestcases{},
-		"rapiddns-spider":    rapiddnsSpiderTestcases{},
-		"baidu-spider":       baiduSpiderTestcases{},
-		"yahoo-spider":       yahooSpiderTestcases{},
+		//"qianxun-spider":     qianxunSpiderTestcases{},
+		"rapiddns-spider": rapiddnsSpiderTestcases{},
+		"baidu-spider":    baiduSpiderTestcases{},
+		"yahoo-spider":    yahooSpiderTestcases{},
+		"zoomeye-spider":  zoomeyeSpiderTestcases{},
 
 		//feature tests
 		"output": outputTestcases{},

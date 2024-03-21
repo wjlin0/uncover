@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
-	"net/http"
-	"time"
-
 	"github.com/wjlin0/uncover/sources"
+	"net/http"
 )
 
 const (
@@ -28,16 +25,14 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 	if session.Keys.HunterHowToken == "" {
 		return nil, errors.New(fmt.Sprintf("empty %s keys please read docs %s on how to add keys ", Source, "https://github.com/wjlin0/uncover?tab=readme-ov-file#provider-configuration"))
 	}
-	start := time.Now()
+
 	results := make(chan sources.Result)
 
 	go func() {
 		defer close(results)
 
 		numberOfResults := 0
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		pageQuery := 1
 
 		for {

@@ -5,13 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/projectdiscovery/gologger"
-	"io"
-	"net/http"
-	"time"
-
 	errorutil "github.com/projectdiscovery/utils/errors"
 	"github.com/wjlin0/uncover/sources"
+	"io"
+	"net/http"
 )
 
 const (
@@ -32,14 +29,12 @@ func (agent *Agent) Query(session *sources.Session, query *sources.Query) (chan 
 	}
 
 	results := make(chan sources.Result)
-	start := time.Now()
+
 	go func() {
 		defer close(results)
 
 		numberOfResults := 0
-		defer func() {
-			gologger.Info().Label(agent.Name()).Msgf("query %s took %s seconds to enumerate %d results.", query.Query, time.Since(start).Round(time.Second).String(), numberOfResults)
-		}()
+
 		for {
 			quakeRequest := &Request{
 				Query:       query.Query,

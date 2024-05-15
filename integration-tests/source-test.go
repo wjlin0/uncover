@@ -428,3 +428,13 @@ func (z zoomeyeSpiderTestcases) Execute() error {
 	}
 	return expectResultsGreaterThanCount(results, 0)
 }
+
+type daydaymapTestcases struct{}
+
+func (d daydaymapTestcases) Execute() error {
+	results, err := testutils.RunUncoverAndGetResults(debug, "-daydaymap", "'domain=\"baidu.com\"'")
+	if err != nil {
+		return err
+	}
+	return expectResultsGreaterThanCount(results, 0)
+}

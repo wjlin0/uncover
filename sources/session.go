@@ -33,6 +33,7 @@ var DefaultRateLimits = map[string]*ratelimit.Options{
 	"binaryedge":         {Key: "binaryedge", MaxCount: 1, Duration: time.Second},
 	"fullhunt":           {Key: "fullhunt", MaxCount: 1, Duration: time.Second},
 	"zone0":              {Key: "zone0", MaxCount: 1, Duration: time.Second},
+	"daydaymap":          {Key: "daydaymap", MaxCount: 1, Duration: time.Second},
 	"fofa-spider":        {Key: "fofa-spider", MaxCount: 5, Duration: time.Second},
 	"bing-spider":        {Key: "bing-spider", MaxCount: 1, Duration: time.Second},
 	"google-spider":      {Key: "google-spider", MaxCount: 1, Duration: time.Second},

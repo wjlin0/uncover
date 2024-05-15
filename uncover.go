@@ -8,6 +8,7 @@ import (
 	"github.com/wjlin0/uncover/sources/agent/binaryedge"
 	bing_spider "github.com/wjlin0/uncover/sources/agent/bing-spider"
 	chinaz_spider "github.com/wjlin0/uncover/sources/agent/chinaz-spider"
+	"github.com/wjlin0/uncover/sources/agent/daydaymap"
 	fofa_spider "github.com/wjlin0/uncover/sources/agent/fofa-spider"
 	"github.com/wjlin0/uncover/sources/agent/fullhunt"
 	"github.com/wjlin0/uncover/sources/agent/github"
@@ -101,6 +102,8 @@ func New(opts *Options) (*Service, error) {
 			s.Agents = append(s.Agents, &binaryedge.Agent{})
 		case "zone0":
 			s.Agents = append(s.Agents, &zone0.Agent{})
+		case "daydaymap":
+			s.Agents = append(s.Agents, &daydaymap.Agent{})
 		case "github":
 			s.Agents = append(s.Agents, &github.Agent{})
 		case "fullhunt":
@@ -240,7 +243,7 @@ func (s *Service) ExecuteWithCallback(ctx context.Context, callback func(result 
 // AllAgents returns all supported uncover Agents
 func (s *Service) AllAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0", "daydaymap",
 		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "google-spider", "bing-spider", "chinaz-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider", "zoomeye-spider",
 	}
 }
@@ -251,7 +254,7 @@ func DestructAgents() []string {
 }
 func UncoverAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0", "daydaymap",
 	}
 }
 func AnonymousAgents() []string {
@@ -284,7 +287,7 @@ func (s *Service) hasAnyAnonymousProvider() bool {
 }
 func AllAgents() []string {
 	return []string{
-		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0",
+		"shodan", "censys", "fofa", "quake", "hunter", "zoomeye", "netlas", "criminalip", "publicwww", "hunterhow", "binaryedge", "github", "fullhunt", "zone0", "daydaymap",
 		"shodan-idb", "anubis-spider", "sitedossier-spider", "fofa-spider", "bing-spider", "chinaz-spider", "google-spider", "ip138-spider", "qianxun-spider", "rapiddns-spider", "baidu-spider", "yahoo-spider", "zoomeye-spider",
 	}
 }

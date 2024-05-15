@@ -73,13 +73,15 @@ uncover -h
 This will display help for the tool. Here are all the flags it supports:
 
 ```console
+quickly discover exposed assets on the internet using multiple search engines.
+
 Usage:
   uncover [flags]
 
 Flags:
 INPUT:
    -q, -query string[]   search query, supports: stdin,file,config input (example: -q 'example query', -q 'query.txt')
-   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binaryedge github fullhunt zone0 shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider yahoo-spider] (default fofa)
+   -e, -engine string[]  search engine to query [shodan censys fofa quake hunter zoomeye netlas criminalip publicwww hunterhow binaryedge github fullhunt zone0 daydaymap shodan-idb anubis-spider sitedossier-spider fofa-spider bing-spider chinaz-spider google-spider ip138-spider qianxun-spider rapiddns-spider baidu-spider yahoo-spider zoomeye-spider] (default fofa)
 
 SEARCH-ENGINE:
    -s, -shodan string[]                search query for shodan (example: -shodan 'query.txt')
@@ -92,6 +94,7 @@ SEARCH-ENGINE:
    -ne, -netlas string[]               search query for netlas (example: -netlas 'query.txt')
    -be, -binaryedge string[]           search query for binaryedge (example: -binaryedge 'query.txt')
    -z0, -zone0 string[]                search query for zone0 (example: -zone0 'query.txt')
+   -ddm, -daydaymap string[]           search query for daydaymap (example: -daydaymap 'query.txt')
    -cl, -criminalip string[]           search query for criminalip (example: -criminalip 'query.txt')
    -pw, -publicwww string[]            search query for publicwww (example: -publicwww 'query.txt')
    -hh, -hunterhow string[]            search query for hunterhow (example: -hunterhow 'query.txt')
@@ -108,6 +111,7 @@ SEARCH-ENGINE:
    -as, -anubis-spider string[]        search query for anubis-spider (example: -anubis-spider 'query.txt')
    -bus, -baidu-spider string[]        search query for baidu-spider (example: -baidu-spider 'query.txt')
    -ys, -yahoo-spider string[]         search query for yahoo-spider (example: -yahoo-spider 'query.txt')
+   -zes, -zoomeye-spider string[]      search query for zoomeye-spider (example: -zoomeye-spider 'query.txt')
 
 CONFIG:
    -pc, -provider string         provider configuration file (default "/Users/wjl/.config/uncover/provider-config.yaml")
@@ -132,9 +136,12 @@ OUTPUT:
    -nc, -no-color      disable colors in output
 
 DEBUG:
-   -silent   show only results in output
-   -version  show version of the project
-   -v        show verbose output
+   -silent               show only results in output
+   -version              show version of the project
+   -da, -destruct-agent  show destruct agent
+   -v                    show verbose output
+
+
 ```
 
 ## Using uncover as library
@@ -191,6 +198,9 @@ binaryedge:
 zone0:
   - ZONE0_API_KEY_1
   - ZONE0_API_KEY_2
+daydaymap:
+  - DAYDAYMAP_API_KEY_1
+  - DAYDAYMAP_API_KEY_2
 ```
 
 When multiple keys/credentials are specified for same provider in the config file, random key will be used for each execution.
@@ -214,6 +224,7 @@ export HUNTERHOW_API_KEY=xxx
 export PUBLICWWW_API_KEY=xxx
 export CRIMINALIP_API_KEY=xxx
 export ZOOE0_API_KEY=xxx
+export DAYDAYMAP_API_KEY=xxx
 ```
 
 Required API keys can be obtained by signing up on following platform [Shodan](https://account.shodan.io/register), [Censys](https://censys.io/register), [Fofa](https://fofa.info/toLogin), [Quake](https://quake.360.net/quake/#/index), [Hunter](https://user.skyeye.qianxin.com/user/register?next=https%3A//hunter.qianxin.com/api/uLogin&fromLogin=1), [ZoomEye](https://www.zoomeye.org/login), [Netlas](https://app.netlas.io/registration/), [CriminalIP](https://www.criminalip.io/register), [Publicwww](https://publicwww.com/profile/signup.html) and [binary](https://app.binaryedge.io/login)

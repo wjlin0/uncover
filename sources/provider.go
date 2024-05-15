@@ -36,6 +36,7 @@ type Provider struct {
 	Github     []string `yaml:"github"`
 	FullHunt   []string `json:"fullhunt"`
 	Zone0      []string `json:"zone0"`
+	DayDayMap  []string `json:"daydaymap"`
 }
 
 // NewProvider loads provider keys from default location and env variables
@@ -115,6 +116,9 @@ func (provider *Provider) GetKeys() Keys {
 	if len(provider.Zone0) > 0 {
 		keys.Zone0Token = provider.Zone0[rand.Intn(len(provider.Zone0))]
 	}
+	if len(provider.DayDayMap) > 0 {
+		keys.DayDayMapToken = provider.DayDayMap[rand.Intn(len(provider.DayDayMap))]
+	}
 	return keys
 }
 
@@ -158,6 +162,7 @@ func (provider *Provider) LoadProviderKeysFromEnv() {
 	}
 	provider.Fofa = appendIfAllExists(provider.Fofa, "FOFA_EMAIL", "FOFA_KEY")
 	provider.Censys = appendIfAllExists(provider.Censys, "CENSYS_API_ID", "CENSYS_API_SECRET")
+	provider.DayDayMap = appendIfExists(provider.DayDayMap, "DAYDAYMAP_API_KEY")
 }
 
 // HasKeys returns true if at least one agent/source has keys
@@ -176,6 +181,7 @@ func (provider *Provider) HasKeys() bool {
 		len(provider.Github) > 0,
 		len(provider.FullHunt) > 0,
 		len(provider.Zone0) > 0,
+		len(provider.DayDayMap) > 0,
 	)
 }
 

@@ -17,7 +17,6 @@ require (
 	github.com/projectdiscovery/ratelimit v0.0.19
 	github.com/projectdiscovery/retryablehttp-go v1.0.52
 	github.com/projectdiscovery/utils v0.0.84
-	github.com/remeh/sizedwaitgroup v1.0.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tj/go-update v2.2.5-0.20200519121640-62b4b798fd68+incompatible
 	golang.org/x/net v0.21.0

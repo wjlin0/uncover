@@ -59,6 +59,7 @@ type Options struct {
 	FoFaSpider        goflags.StringSlice
 	Binaryedge        goflags.StringSlice
 	Zone              goflags.StringSlice
+	DayDayMap         goflags.StringSlice
 	GoogleSpider      goflags.StringSlice
 	BingSpider        goflags.StringSlice
 	ChinazSpider      goflags.StringSlice
@@ -100,6 +101,7 @@ func ParseOptions() *Options {
 		flagSet.StringSliceVarP(&options.Netlas, "netlas", "ne", nil, "search query for netlas (example: -netlas 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Binaryedge, "binaryedge", "be", nil, "search query for binaryedge (example: -binaryedge 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Zone, "zone0", "z0", nil, "search query for zone0 (example: -zone0 'query.txt')", goflags.FileStringSliceOptions),
+		flagSet.StringSliceVarP(&options.DayDayMap, "daydaymap", "ddm", nil, "search query for daydaymap (example: -daydaymap 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.CriminalIP, "criminalip", "cl", nil, "search query for criminalip (example: -criminalip 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.Publicwww, "publicwww", "pw", nil, "search query for publicwww (example: -publicwww 'query.txt')", goflags.FileStringSliceOptions),
 		flagSet.StringSliceVarP(&options.HunterHow, "hunterhow", "hh", nil, "search query for hunterhow (example: -hunterhow 'query.txt')", goflags.FileStringSliceOptions),
@@ -194,6 +196,7 @@ func ParseOptions() *Options {
 		len(options.HunterHow),
 		len(options.Github),
 		len(options.FullHunt),
+		len(options.DayDayMap),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -272,6 +275,7 @@ func (options *Options) validateOptions() error {
 		len(options.HunterHow),
 		len(options.Github),
 		len(options.FullHunt),
+		len(options.DayDayMap),
 		len(options.FoFaSpider),
 		len(options.GoogleSpider),
 		len(options.BingSpider),
@@ -306,6 +310,7 @@ func (options *Options) validateOptions() error {
 		len(options.Netlas),
 		len(options.Binaryedge),
 		len(options.Zone),
+		len(options.DayDayMap),
 		len(options.CriminalIP),
 		len(options.Publicwww),
 		len(options.HunterHow),
@@ -363,6 +368,7 @@ func appendAllQueries(options *Options) {
 	appendQuery(options, "github", options.Github...)
 	appendQuery(options, "zone0", options.Zone...)
 	appendQuery(options, "fullhunt", options.FullHunt...)
+	appendQuery(options, "daydaymap", options.DayDayMap...)
 	appendQuery(options, "fofa-spider", options.FoFaSpider...)
 	appendQuery(options, "google-spider", options.GoogleSpider...)
 	appendQuery(options, "bing-spider", options.BingSpider...)

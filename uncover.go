@@ -179,7 +179,7 @@ func (s *Service) Execute(ctx context.Context) (<-chan sources.Result, error) {
 			}
 			keys := s.Provider.GetKeys()
 			if keys.Empty() && !(stringsutil.EqualFoldAny(agent.Name(), AnonymousAgents()...)) {
-				gologger.Error().Msgf(agent.Name(), "agent given but keys not found")
+				gologger.Error().Msgf("%s agent given but keys not found", agent.Name())
 				continue agentLabel
 			}
 			ch, err := agent.Query(s.Session, &sources.Query{

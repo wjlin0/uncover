@@ -102,6 +102,7 @@ func (q *query) updates(subdomains []string) {
 		protocol, host, port := util.GetProtocolHostAndPort(subdomain)
 		result := sources.Result{Source: q.agent.Name()}
 		result.Host = host
+		result.IP = host
 		result.Port = port
 		portStr := fmt.Sprintf("%d", port)
 		result.Url = protocol + "://" + host + ":" + portStr

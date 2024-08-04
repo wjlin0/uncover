@@ -7,6 +7,7 @@ import (
 	"fmt"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"io"
 	"net/http"
 )
@@ -93,12 +94,14 @@ func (agent *Agent) query(URL string, session *sources.Session, quakeRequest *Re
 	for _, quakeResult := range quakeResponse.Data {
 		result := sources.Result{Source: agent.Name()}
 		result.IP = quakeResult.IP
-		if result.Port = quakeResult.Port; result.Port == 0 {
-			result.Port = 80
-		}
+		result.Port = quakeResult.Port
 		host := quakeResult.Hostname
 		if host == "" {
-			host = fmt.Sprintf("%s:%d", result.IP, result.Port)
+			host = fmt.Sprintf("%s", result.IP)
+		}
+		_, host, port := util.GetProtocolHostAndPort(host)
+		if result.Port == 0 {
+			result.Port = port
 		}
 		result.Host = host
 		raw, _ := json.Marshal(result)

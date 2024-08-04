@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"net/url"
 
@@ -97,7 +98,7 @@ func (agent *Agent) query(URL string, session *sources.Session, censysRequest *C
 			result.IP = ip.(string)
 		}
 		if name, ok := censysResult["name"]; ok {
-			result.Host = name.(string)
+			_, result.Host, _ = util.GetProtocolHostAndPort(name.(string))
 		}
 		if services, ok := censysResult["services"]; ok {
 			for _, serviceData := range services.([]interface{}) {

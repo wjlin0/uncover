@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"io"
 	"net/http"
 	"strings"
@@ -70,7 +71,7 @@ func (agent *Agent) query(URL string, session *sources.Session, rapid *rapidDNS,
 	sub = sources.MatchSubdomains(rapid.Domain, body.String(), true)
 	for _, ra := range sub {
 		result := sources.Result{Source: agent.Name()}
-		result.Host = ra
+		_, result.Host, result.Port = util.GetProtocolHostAndPort(ra)
 		raw, _ := json.Marshal(result)
 		result.Raw = raw
 		results <- result

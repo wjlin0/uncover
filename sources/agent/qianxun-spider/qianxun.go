@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"io"
 	"net/http"
 	"strings"
@@ -92,7 +93,8 @@ func (agent *Agent) query(session *sources.Session, domain string, URL string, D
 			continue
 		}
 		result := sources.Result{Source: Source}
-		result.Host = qianxun
+		_, result.Host, result.Port = util.GetProtocolHostAndPort(qianxun)
+		result.IP = result.Host
 		raw, _ := json.Marshal(result)
 		result.Raw = raw
 		results <- result

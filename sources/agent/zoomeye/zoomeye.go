@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -102,7 +103,8 @@ func (agent *Agent) query(URL string, session *sources.Session, zoomeyeRequest *
 				if result.Port == 0 {
 					continue
 				}
-				result.Host = port["hostname"].(string)
+				_, result.Host, _ = util.GetProtocolHostAndPort(port["hostname"].(string))
+				result.IP = result.Host
 				raw, _ := json.Marshal(zoomeyeResult)
 				result.Raw = raw
 				results <- result

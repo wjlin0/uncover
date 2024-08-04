@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 )
 
@@ -75,7 +76,11 @@ func (agent *Agent) query(URL string, session *sources.Session, hunterRequest *R
 		for _, hunterResult := range hunterResponse.Data.Arr {
 			result := sources.Result{Source: agent.Name()}
 			result.IP = hunterResult.IP
-			result.Port = hunterResult.Port
+			_, host, port := util.GetProtocolHostAndPort(hunterResult.Domain)
+			result.Host = host
+			if result.Port = hunterResult.Port; result.Port == 0 {
+				result.Port = port
+			}
 			result.Host = hunterResult.Domain
 			raw, _ := json.Marshal(result)
 			result.Raw = raw

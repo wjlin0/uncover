@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"net/url"
 
@@ -101,7 +102,8 @@ func (agent *Agent) query(URL string, session *sources.Session, shodanRequest *S
 		if hostnames, ok := shodanResult["hostnames"]; ok {
 			if _, ok := hostnames.([]interface{}); ok {
 				for _, hostname := range hostnames.([]interface{}) {
-					result.Host = fmt.Sprint(hostname)
+					_, host, _ := util.GetProtocolHostAndPort(fmt.Sprint(hostname))
+					result.Host = host
 				}
 			}
 			raw, _ := json.Marshal(shodanResult)

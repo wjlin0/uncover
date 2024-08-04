@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"io"
 	"net/http"
 	"strings"
@@ -70,7 +71,8 @@ func (agent *Agent) query(URL string, session *sources.Session, chinaz *chinazRe
 	sub = sources.MatchSubdomains(chinaz.Domain, body.String(), true)
 	for _, ch := range sub {
 		result := sources.Result{Source: agent.Name()}
-		result.Host = ch
+		_, result.Host, result.Port = util.GetProtocolHostAndPort(ch)
+		result.IP = result.Host
 		raw, _ := json.Marshal(result)
 		result.Raw = raw
 		results <- result

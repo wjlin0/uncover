@@ -103,6 +103,7 @@ func (agent *Agent) query(session *sources.Session, URL string, fullhunt *fullhu
 		protocol, host, port := util.GetProtocolHostAndPort(host)
 		result.Url = fmt.Sprintf("%s://%s:%d", protocol, host, port)
 		result.Host = host
+		result.IP = host
 		result.Port = port
 		raw, _ := json.Marshal(result)
 		result.Raw = raw

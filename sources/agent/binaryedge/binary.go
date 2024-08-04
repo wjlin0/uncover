@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/wjlin0/uncover/sources"
+	util "github.com/wjlin0/uncover/utils"
 	"io"
 	"net/http"
 	"net/url"
@@ -89,9 +90,8 @@ func (agent *Agent) query(session *sources.Session, binaryRequest *BinaryRequest
 	}
 	for _, binaryResult := range binaryResponse.Data {
 		result := sources.Result{Source: agent.Name()}
-		result.Host = binaryResult
-		result.Port = 80
-		result.IP = binaryResult
+		_, result.Host, result.Port = util.GetProtocolHostAndPort(binaryResult)
+		result.IP = result.Host
 		raw, _ := json.Marshal(result)
 		result.Raw = raw
 		results <- result

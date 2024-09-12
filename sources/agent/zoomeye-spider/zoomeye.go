@@ -212,11 +212,28 @@ func (agent *Agent) query(session *sources.Session, q string, url string, limit 
 				if ips, ok := matcher.Ip.([]string); ok && len(ips) > 0 {
 					s.IP = ips[0]
 				}
-				if matcher.Ssl != "" {
-					s.Port = 443
+
+				if matcher.PortInfo != nil {
+					s.Port = matcher.PortInfo.Port
+					if s.Port == 0 && matcher.PortInfo.Service == "http" {
+						s.Url = fmt.Sprintf("http://%s", s.Host)
+						s.Port = 80
+					} else if s.Port == 0 && matcher.PortInfo.Service == "https" {
+						s.Port = 443
+						s.Url = fmt.Sprintf("https://%s", s.Host)
+					}
+					s.Url = fmt.Sprintf("%s://%s:%d", matcher.PortInfo.Service, s.Host, s.Port)
+
 				} else {
-					s.Port = 80
+					if matcher.Ssl != "" {
+						s.Port = 443
+						s.Url = fmt.Sprintf("https://%s", s.Host)
+					} else {
+						s.Port = 80
+						s.Url = fmt.Sprintf("http://%s", s.Host)
+					}
 				}
+
 			case "host":
 				var (
 					ip string
@@ -228,14 +245,15 @@ func (agent *Agent) query(session *sources.Session, q string, url string, limit 
 				s.IP = ip
 				s.Host = ip
 				if matcher.PortInfo == nil {
-					continue
-				}
-				s.Port = matcher.PortInfo.Port
-
-				if strings.HasPrefix(matcher.PortInfo.Service, "http") {
-					s.Url = fmt.Sprintf("%s://%s:%d", matcher.PortInfo.Service, ip, s.Port)
-				} else {
+					s.Port = 80
 					s.Url = fmt.Sprintf("http://%s", ip)
+				} else {
+					s.Port = matcher.PortInfo.Port
+					if strings.HasPrefix(matcher.PortInfo.Service, "http") {
+						s.Url = fmt.Sprintf("%s://%s:%d", matcher.PortInfo.Service, ip, s.Port)
+					} else {
+						s.Url = fmt.Sprintf("http://%s", ip)
+					}
 				}
 			default:
 				continue

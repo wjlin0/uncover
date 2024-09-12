@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	util "github.com/wjlin0/uncover/utils"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	URL = "https://api.zoomeye.org/host/search?query=%s&page=%d"
+	URL = "https://api.zoomeye.org/web/search?query=%s&page=%d"
 )
 
 type Agent struct{}
@@ -94,26 +93,50 @@ func (agent *Agent) query(URL string, session *sources.Session, zoomeyeRequest *
 
 	for _, zoomeyeResult := range zoomeyeResponse.Results {
 		result := sources.Result{Source: agent.Name()}
-		if ip, ok := zoomeyeResult["ip"]; ok {
-			result.IP = ip.(string)
+		if site, ok := zoomeyeResult["site"]; ok {
+			result.Host = site.(string)
 		}
+		if ip, ok := zoomeyeResult["ip"]; ok {
+			if ips, ok := ip.([]interface{}); ok {
+				if len(ips) > 0 {
+					result.IP = ips[0].(string)
+				}
+			}
+		}
+
+		if result.Host == "" && result.IP == "" {
+			continue
+		}
+		switch {
+		case result.Host == "":
+			result.Host = result.IP
+		case result.IP == "":
+			result.IP = result.Host
+		}
+
 		if portinfo, ok := zoomeyeResult["portinfo"]; ok {
 			if port, ok := portinfo.(map[string]interface{}); ok {
-				result.Port = convertPortFromValue(port["port"])
-				if result.Port == 0 {
-					continue
+				port_ := convertPortFromValue(port["port"])
+				protocal := port["service"]
+				if protocal == "https" && port_ == 0 {
+					port_ = 443
 				}
-				_, result.Host, _ = util.GetProtocolHostAndPort(port["hostname"].(string))
-				result.IP = result.Host
-				raw, _ := json.Marshal(zoomeyeResult)
+				if protocal == "http" && port_ == 0 {
+					port_ = 80
+				}
+				result.Port = port_
+				result.Url = fmt.Sprintf("%s://%s:%d", protocal, result.Host, result.Port)
+				raw, _ := json.Marshal(result)
 				result.Raw = raw
-				results <- result
 			}
+
 		} else {
-			raw, _ := json.Marshal(zoomeyeResult)
+			result.Port = 80
+			result.Url = fmt.Sprintf("http://%s:%d", result.Host)
+			raw, _ := json.Marshal(result)
 			result.Raw = raw
-			results <- result
 		}
+		results <- result
 	}
 
 	return zoomeyeResponse

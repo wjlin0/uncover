@@ -132,7 +132,7 @@ func (agent *Agent) query(URL string, session *sources.Session, zoomeyeRequest *
 
 		} else {
 			result.Port = 80
-			result.Url = fmt.Sprintf("http://%s:%d", result.Host)
+			result.Url = fmt.Sprintf("http://%s:%d", result.Host, result.Port)
 			raw, _ := json.Marshal(result)
 			result.Raw = raw
 		}
